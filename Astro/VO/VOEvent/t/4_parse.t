@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 3;
+use Test::More tests => 5;
 
 # load modules
 BEGIN {
@@ -29,9 +29,24 @@ foreach my $i ( 0 ... $#buffer ) {
 }   
 
 my $object = new Astro::VO::VOEvent( XML => $xml );
-my $id = $object->id( );
 
-is( $id, "ivo://raptor.lanl/23456789/", "comparing ID strings" );
+my $id = $object->id( );
+is( $id, "ivo://raptor.lanl/23456789/", "Comparing ID strings" );
+
+my $role = $object->role( );
+is( $role, "test", "Comparing ROLE strings" );
+
+my $version = $object->version( );
+is( $version, "HTN/0.1", "Comparing VERSION strings" );
+
+my $description = $object->description( );
+is( $description, "This is some human readable text.", "comparing <Description>" );
+
+my $ra = $object->ra( );
+is( $ra, "148.888", "Comparing RA" );
+
+my $ra = $object->dec( );
+is( $ra, "69.065", "Comparing Dec" );
 
 
 # T I M E   A T   T H E   B A R ---------------------------------------------

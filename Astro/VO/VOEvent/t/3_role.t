@@ -29,9 +29,9 @@ foreach my $i ( 0 ... $#buffer ) {
 }   
 
 my $object = new Astro::VO::VOEvent( XML => $xml );
-my $id = $object->id( );
+my $role = $object->role( );
 
-is( $id, "ivo://raptor.lanl/23456789/", "comparing ID strings" );
+is( $role, "test", "comparing ROLE strings" );
 
 
 # T I M E   A T   T H E   B A R ---------------------------------------------

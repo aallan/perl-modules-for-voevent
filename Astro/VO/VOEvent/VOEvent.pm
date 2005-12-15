@@ -27,7 +27,8 @@ to do something more useful.
 use strict;
 use vars qw/ $VERSION $SELF /;
 
-use XML::Parser;
+#use XML::Parser;
+use XML::Simple;
 use XML::Writer;
 use XML::Writer::String;
 
@@ -36,13 +37,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.2 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.3 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.2 2005/11/25 15:34:36 voevent Exp $
+$Id: VOEvent.pm,v 1.3 2005/12/15 17:06:03 voevent Exp $
 
 =head1 METHODS
 
@@ -65,13 +66,12 @@ sub new {
   my $class = ref($proto) || $proto;
 
   # bless the query hash into the class
-  my $block = bless { PARSER   => undef,
+  my $block = bless { DOCUMENT => undef,
                       WRITER   => undef,
-                      DOCUMENT => undef,
                       BUFFER   => undef }, $class;
 
   # Configure the object
-  $block->configure( @_ );
+  $block->configure( @_ ); 
 
   return $block;
 
@@ -507,62 +507,119 @@ sub build {
   # END DOCUMENT --------------------------------------------------------- 
   $self->{WRITER}->endTag( 'VOEvent' );
   $self->{WRITER}->end();
-     
-  return $self->{BUFFER}->value();  
+  
+  my $xml = $self->{BUFFER}->value();
+  $self->_parse( XML => $xml );
+  return $xml;  
    
      
 }
 
-=item B<parse>
-
-Parse a VOEvent document
-
-  $document = $object->parse( File => $file_name );
-  $document = $object->parse( XML => $scalar );
-
-this parse a VOEvent document.
-
-=cut
-
-sub parse {
-  my $self = shift;
-  my %args = @_;
-    
-  # Loop over the allowed keys
-  for my $key (qw / File XML / ) {
-     if ( lc($key) eq "file" && exists $args{$key} ) { 
-        $self->{DOCUMENT} = $self->{PARSER}->parsefile( $args{$key} );
-        return $self->{DOCUMENT};
-        
-     } elsif ( lc($key) eq "xml"  && exists $args{$key} ) {
-        $self->{DOCUMENT} = $self->{PARSER}->parse( $args{$key} );
-        return $self->{DOCUMENT};
-        
-     }  
-  }
-  return undef;
-  
- 
-}
-
-=item B<determine_id>
+=item B<id>
 
 Return the id of the VOEvent document
 
-  $id = $object->determine_id( File => $file_name );
-  $id = $object->determine_id( XML => $scalar );
+  $object = new Astro::VO::VOEvent( XML => $scalar );
+  $id = $object->id();
+  
+=cut
 
-this is the only information about the document available via this module.
+sub id {
+  my $self = shift;
+  return $self->{DOCUMENT}->{id};
+}
+
+=item B<role>
+
+Return the role of the VOEvent document
+
+  $object = new Astro::VO::VOEvent( XML => $scalar );
+  $id = $object->role();
+  
+=cut
+
+sub role {
+  my $self = shift;
+  return $self->{DOCUMENT}->{role};
+}
+
+=item B<version>
+
+Return the version of the VOEvent document
+
+  $object = new Astro::VO::VOEvent( XML => $scalar );
+  $version = $object->version();
+  
+=cut
+
+sub version {
+  my $self = shift;
+  return $self->{DOCUMENT}->{version};
+}
+
+
+=item B<description>
+
+Return the human readable description from the VOEvent document
+
+  $object = new Astro::VO::VOEvent( XML => $scalar );
+  $string = $object->description();
+  
+=cut
+
+sub description {
+  my $self = shift;
+  return $self->{DOCUMENT}->{Description};
+}
+
+=item B{ra}
+
+Return the RA of the object as given in the <WhereWhen> tag
+
+  $object = new Astro::VO::VOEvent( XML => $scalar );
+  $ra = $object->ra();
 
 =cut
 
-sub determine_id {
+sub ra {
   my $self = shift;
-  my %args = @_;
   
-  $self->parse( %args );
-  return ${${${$self->{DOCUMENT}}[1]}[0]}{'id'};
-}
+  if ( defined $self->{DOCUMENT}->{WhereWhen}->{type} &&
+       $self->{DOCUMENT}->{WhereWhen}->{type} eq "simple" ) {
+       return $self->{DOCUMENT}->{WhereWhen}->{RA}->{Coord};
+  } else {
+  
+    my $string = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+                        {"crd:AstroCoords"}->{"crd:Position2D"}->{"crd:Value2"};
+    my ($ra, $dec) = split " ", $string;
+    return $ra;
+  }  
+} 
+
+
+=item B{dec}
+
+Return the Dec of the object as given in the <WhereWhen> tag
+
+  $object = new Astro::VO::VOEvent( XML => $scalar );
+  $dec = $object->dec();
+
+=cut
+
+sub dec {
+  my $self = shift;
+  
+  if ( defined $self->{DOCUMENT}->{WhereWhen}->{type} &&
+       $self->{DOCUMENT}->{WhereWhen}->{type} eq "simple" ) {
+       return $self->{DOCUMENT}->{WhereWhen}->{Dec}->{Coord};
+  } else {
+ 
+    my $string = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+                        {"crd:AstroCoords"}->{"crd:Position2D"}->{"crd:Value2"};
+    my ($ra, $dec) = split " ", $string;
+    return $dec;
+  }  
+}   
 
 # C O N F I G U R E ---------------------------------------------------------
 
@@ -585,21 +642,34 @@ does nothing if the hash is not supplied.
 sub configure {
   my $self = shift;
 
-  # SELF REFERENCE
-  # --------------
-  $SELF = $self;
-
-  # BLESS XML PARSER
-  # ----------------
-  $self->{PARSER} = new XML::Parser( Style            => 'Tree',
-                                     ProtocolEncoding => 'US-ASCII' );
-
   # BLESS XML WRITER
   # ----------------
   $self->{BUFFER} = new XML::Writer::String();  
   $self->{WRITER} = new XML::Writer( OUTPUT      => $self->{BUFFER},
                                      DATA_MODE   => 1, 
                                      DATA_INDENT => 4 );
+				     
+  # CONFIGURE FROM ARGUEMENTS
+  # -------------------------
+
+  # return unless we have arguments
+  return undef unless @_;
+
+  # grab the argument list
+  my %args = @_;
+				        
+  # Loop over the allowed keys
+  for my $key (qw / File XML / ) {
+     if ( lc($key) eq "file" && exists $args{$key} ) { 
+        $self->_parse( File => $args{$key} );
+	last;
+	
+     } elsif ( lc($key) eq "xml"  && exists $args{$key} ) {
+        $self->_parse( XML => $args{$key} );
+	last;
+	      
+     }  
+  }				     
 
   # Nothing to configure...
   return undef;
@@ -623,6 +693,52 @@ License.
 Alasdair Allan E<lt>aa@astro.ex.ac.ukE<gt>,
 
 =cut
+
+# P R I V A T E   M E T H O D S ------------------------------------------
+
+=begin __PRIVATE_METHODS__
+
+=head2 Private Methods
+
+These methods are for internal use only.
+
+=over 4
+
+=item B<_parse>
+
+Private method to parse a VOEvent document
+
+  $object->_parse( File => $file_name );
+  $object->_parse( XML => $scalar );
+
+this should not be called directly
+=cut
+
+sub _parse {
+  my $self = shift;
+
+  # return unless we have arguments
+  return undef unless @_;
+
+  # grab the argument list
+  my %args = @_;
+
+  # Loop over the allowed keys
+  for my $key (qw / File XML / ) {
+     if ( lc($key) eq "file" && exists $args{$key} ) { 
+	$self->{DOCUMENT} = XMLin( $args{$key} );
+	last;
+	
+     } elsif ( lc($key) eq "xml"  && exists $args{$key} ) {
+	$self->{DOCUMENT} = XMLin( $args{$key} );
+	last;
+	
+     }  
+  }
+  
+  print Dumper( $self->{DOCUMENT} );      
+  return;
+}
 
 # L A S T  O R D E R S ------------------------------------------------------
 

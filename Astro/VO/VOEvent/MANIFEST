@@ -7,3 +7,6 @@ VOEvent.pm
 t/1_ref.t
 t/2_simple.t
 t/3_id.t
+t/3_version.t
+t/4_parse.t
+t/4_stc.t

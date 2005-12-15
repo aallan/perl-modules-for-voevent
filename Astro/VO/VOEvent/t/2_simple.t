@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 64;
+use Test::More tests => 65;
 
 # load modules
 BEGIN {
@@ -85,6 +85,10 @@ my @xml = split( /\n/, $document );
 foreach my $i ( 0 ... $#buffer ) {
    is( $xml[$i], $buffer[$i], "comparing line $i in XML document" );
 }
+
+my $id = $object->id( );
+is( $id, "ivo://raptor.lanl/23456789/", "comparing ID strings" );
+
 
 # T I M E   A T   T H E   B A R ---------------------------------------------
 
