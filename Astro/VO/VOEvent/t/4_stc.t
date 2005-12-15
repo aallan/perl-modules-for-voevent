@@ -46,8 +46,8 @@ is( $description, undef, "comparing <Description>" );
 my $ra = $object->ra( );
 is( $ra, "148.88", "Comparing RA" );
 
-my $ra = $object->dec( );
-is( $ra, "69.06", "Comparing Dec" );
+my $dec = $object->dec( );
+is( $dec, "69.06", "Comparing Dec" );
 
 
 # T I M E   A T   T H E   B A R ---------------------------------------------

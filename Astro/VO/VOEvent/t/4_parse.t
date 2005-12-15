@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 5;
+use Test::More tests => 8;
 
 # load modules
 BEGIN {
@@ -45,8 +45,8 @@ is( $description, "This is some human readable text.", "comparing <Description>"
 my $ra = $object->ra( );
 is( $ra, "148.888", "Comparing RA" );
 
-my $ra = $object->dec( );
-is( $ra, "69.065", "Comparing Dec" );
+my $dec = $object->dec( );
+is( $dec, "69.065", "Comparing Dec" );
 
 
 # T I M E   A T   T H E   B A R ---------------------------------------------
