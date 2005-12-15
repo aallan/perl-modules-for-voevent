@@ -37,13 +37,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.3 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.4 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.3 2005/12/15 17:06:03 voevent Exp $
+$Id: VOEvent.pm,v 1.4 2005/12/15 17:51:43 voevent Exp $
 
 =head1 METHODS
 
@@ -584,17 +584,29 @@ Return the RA of the object as given in the <WhereWhen> tag
 sub ra {
   my $self = shift;
   
+  my %ra;  
   if ( defined $self->{DOCUMENT}->{WhereWhen}->{type} &&
        $self->{DOCUMENT}->{WhereWhen}->{type} eq "simple" ) {
-       return $self->{DOCUMENT}->{WhereWhen}->{RA}->{Coord};
+       
+
+     $ra{value} = $self->{DOCUMENT}->{WhereWhen}->{RA}->{Coord};
+     $ra{units} = $self->{DOCUMENT}->{WhereWhen}->{RA}->{units};
+     $ra{error} = {"value" => $self->{DOCUMENT}->{WhereWhen}->{RA}->{Error}{value},
+                   "units" => $self->{DOCUMENT}->{WhereWhen}->{RA}->{Error}{units}};
   } else {
   
     my $string = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
                         {"crd:AstroCoords"}->{"crd:Position2D"}->{"crd:Value2"};
     my ($ra, $dec) = split " ", $string;
-    return $ra;
+    
+    $ra{value} = $ra;
+    $ra{units} =  $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+                        {"crd:AstroCoords"}->{"crd:Position2D"}->{unit};
+
   }  
-} 
+  
+  return ( wantarray ? %ra : $ra{"value"} );
+}
 
 
 =item B{dec}
@@ -609,17 +621,84 @@ Return the Dec of the object as given in the <WhereWhen> tag
 sub dec {
   my $self = shift;
   
+  my %dec;  
   if ( defined $self->{DOCUMENT}->{WhereWhen}->{type} &&
        $self->{DOCUMENT}->{WhereWhen}->{type} eq "simple" ) {
-       return $self->{DOCUMENT}->{WhereWhen}->{Dec}->{Coord};
+       
+
+     $dec{value} = $self->{DOCUMENT}->{WhereWhen}->{Dec}->{Coord};
+     $dec{units} = $self->{DOCUMENT}->{WhereWhen}->{Dec}->{units};
+     $dec{error} = {"value"=>$self->{DOCUMENT}->{WhereWhen}->{Dec}->{Error}{value},
+                   "units"=>$self->{DOCUMENT}->{WhereWhen}->{Dec}->{Error}{units}};
   } else {
- 
+  
     my $string = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
                         {"crd:AstroCoords"}->{"crd:Position2D"}->{"crd:Value2"};
     my ($ra, $dec) = split " ", $string;
-    return $dec;
+    
+    $dec{value} = $dec;
+    $dec{units} = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+                        {"crd:AstroCoords"}->{"crd:Position2D"}->{unit};
+
   }  
+  
+  return ( wantarray ? %dec : $dec{"value"} );
 }   
+
+=item B{epoch}
+
+Return the Dec of the object as given in the <WhereWhen> tag
+
+  $object = new Astro::VO::VOEvent( XML => $scalar );
+  $epoch = $object->epoch();
+
+=cut
+
+sub epoch {
+  my $self = shift;
+  
+  if ( defined $self->{DOCUMENT}->{WhereWhen}->{type} &&
+       $self->{DOCUMENT}->{WhereWhen}->{type} eq "simple" ) {
+       return $self->{DOCUMENT}->{WhereWhen}->{Epoch}->{value};
+  } else {
+ 
+    my $string = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+                        {"crd:AstroCoords"}->{"coord_system_id"};
+    if( $string =~ "FK5" ) {
+       return "J2000.0";
+    } else {
+       return undef;
+    }      
+  }  
+} 
+
+
+=item B{equinox}
+
+Return the Dec of the object as given in the <WhereWhen> tag
+
+  $object = new Astro::VO::VOEvent( XML => $scalar );
+  $equinox = $object->equinox();
+
+=cut
+
+sub equinox {
+  my $self = shift;
+  
+  if ( defined $self->{DOCUMENT}->{WhereWhen}->{type} &&
+       $self->{DOCUMENT}->{WhereWhen}->{type} eq "simple" ) {
+       return $self->{DOCUMENT}->{WhereWhen}->{Equinox}->{value};
+  } else {
+ 
+    my $string = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+                        {"crd:AstroCoords"}->{"coord_system_id"};
+    if( $string =~ "FK5" ) {
+       return "2000.0";
+    } else {
+       return undef;
+    }      
+  }  
+} 
 
 # C O N F I G U R E ---------------------------------------------------------
 

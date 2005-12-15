@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 8;
+use Test::More tests => 12;
 
 # load modules
 BEGIN {
@@ -49,6 +49,28 @@ is( $ra, "148.88", "Comparing RA" );
 my $dec = $object->dec( );
 is( $dec, "69.06", "Comparing Dec" );
 
+my $ra_return = "\$VAR1 = 'value';\n".
+		"\$VAR2 = '148.88';\n".
+		"\$VAR3 = 'units';\n".
+		"\$VAR4 = 'deg';\n";
+		
+my %ra = $object->ra( );
+is( Dumper(%ra), $ra_return, "Comparing RA in list context" );
+
+
+my $dec_return = "\$VAR1 = 'value';\n".
+		"\$VAR2 = '69.06';\n".
+		"\$VAR3 = 'units';\n".
+		"\$VAR4 = 'deg';\n";
+		
+my %dec = $object->dec( );
+is( Dumper(%dec), $dec_return, "Comparing Dec in list context" );
+
+my $epoch = $object->epoch( );
+is( $epoch, "J2000.0", "Comparing Epoch" );
+
+my $equinox = $object->equinox( );
+is( $equinox, "2000.0", "Comparing Equinox" );
 
 # T I M E   A T   T H E   B A R ---------------------------------------------
 

@@ -1,6 +1,8 @@
 2005-12-15  Alasdair Allan <aa@astro.ex.ac.uk>
 
 	* VOEvent.pm: Moved to XML::Simple for parsing.
+        
+        * VOEvent.pm: Limited STC support.
 	
 2005-07-27  Alasdair Allan <aa@astro.ex.ac.uk>
 
