@@ -37,13 +37,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.4 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.5 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.4 2005/12/15 17:51:43 voevent Exp $
+$Id: VOEvent.pm,v 1.5 2005/12/15 17:53:00 voevent Exp $
 
 =head1 METHODS
 
@@ -815,7 +815,7 @@ sub _parse {
      }  
   }
   
-  print Dumper( $self->{DOCUMENT} );      
+  #print Dumper( $self->{DOCUMENT} );      
   return;
 }
 

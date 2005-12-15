@@ -10,6 +10,7 @@ Requirements
 ------------
 
 The module requires XML::Parser, XML::Writer and XML::Writer::String
+and XML::Simple.
 
 Installation
 ------------
