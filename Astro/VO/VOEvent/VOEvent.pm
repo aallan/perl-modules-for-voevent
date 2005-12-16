@@ -37,13 +37,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.5 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.6 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.5 2005/12/15 17:53:00 voevent Exp $
+$Id: VOEvent.pm,v 1.6 2005/12/16 21:30:24 voevent Exp $
 
 =head1 METHODS
 
@@ -700,6 +700,21 @@ sub equinox {
   }  
 } 
 
+=item B{what}
+
+Return the <Param> and <Group>'s of <Param>s in the <What> tag,
+
+  $object = new Astro::VO::VOEvent( XML => $scalar );
+  %what = $object->what();
+
+=cut
+
+sub what {
+  my $self = shift;
+  
+  return %{$self->{DOCUMENT}->{What}};
+}
+
 # C O N F I G U R E ---------------------------------------------------------
 
 =back
@@ -802,20 +817,22 @@ sub _parse {
   # grab the argument list
   my %args = @_;
 
+  my $xs = new XML::Simple( );
+
   # Loop over the allowed keys
   for my $key (qw / File XML / ) {
      if ( lc($key) eq "file" && exists $args{$key} ) { 
-	$self->{DOCUMENT} = XMLin( $args{$key} );
+	$self->{DOCUMENT} = $xs->XMLin( $args{$key} );
 	last;
 	
      } elsif ( lc($key) eq "xml"  && exists $args{$key} ) {
-	$self->{DOCUMENT} = XMLin( $args{$key} );
+	$self->{DOCUMENT} = $xs->XMLin( $args{$key} );
 	last;
 	
      }  
   }
   
-  #print Dumper( $self->{DOCUMENT} );      
+  print Dumper( $self->{DOCUMENT} );      
   return;
 }
 

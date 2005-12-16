@@ -1,3 +1,7 @@
+2005-12-16  Alasdair Allan <aa@astro.ex.ac.uk>
+
+        * VOEvent.pm: Added further parsing support
+	
 2005-12-15  Alasdair Allan <aa@astro.ex.ac.uk>
 
 	* VOEvent.pm: Moved to XML::Simple for parsing.

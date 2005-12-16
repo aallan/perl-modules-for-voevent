@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 12;
+use Test::More tests => 13;
 
 # load modules
 BEGIN {
@@ -71,6 +71,42 @@ is( $epoch, "J2000.0", "Comparing Epoch" );
 
 my $equinox = $object->equinox( );
 is( $equinox, "2000.0", "Comparing Equinox" );
+
+my $what_return = 
+     "\$VAR1 = 'Param';\n".
+     "\$VAR2 = {\n".
+     "          'unit' => 'arcsec',\n".
+     "          'value' => '2',\n".
+     "          'name' => 'seeing',\n".
+     "          'ucd' => 'instr.obsty.site.seeing'\n".
+     "        };\n".
+     "\$VAR3 = 'Reference';\n".
+     "\$VAR4 = {\n".
+     "          'uri' => 'http://raptor.lanl.gov/data/lightcurves/235649409'\n".
+     "        };\n".
+     "\$VAR5 = 'Description';\n".
+     "\$VAR6 = 'This is the light curve associated with the observation.';\n".
+     "\$VAR7 = 'Group';\n".
+     "\$VAR8 = {\n".
+     "          'Param' => {\n".
+     "                     'peak' => {\n".
+     "                               'unit' => 'ct/s',\n".
+     "                               'value' => '1310',\n".
+     "                               'ucd' => 'arith.rate;phot.count'\n".
+     "                             },\n".
+     "                     'counts' => {\n".
+     "                                 'unit' => 'ct',\n".
+     "                                 'value' => '73288',\n".
+     "                                 'ucd' => 'phot.count'\n".
+     "                               }\n".
+     "                   },\n".
+     "          'name' => 'SQUARE_GALAXY_FLUX'\n".
+     "        };\n";
+		
+my %what = $object->what( );
+is( Dumper(%what), $what_return, "Comparing <What> in list context" );
+
+
 
 # T I M E   A T   T H E   B A R ---------------------------------------------
 

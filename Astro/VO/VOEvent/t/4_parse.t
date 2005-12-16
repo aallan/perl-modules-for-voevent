@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 12;
+use Test::More tests => 13;
 
 # load modules
 BEGIN {
@@ -79,6 +79,55 @@ is( $epoch, "J2000.0", "Comparing Epoch" );
 
 my $equinox = $object->equinox( );
 is( $equinox, "2000.0", "Comparing Equinox" );
+
+my $what_return = 
+    "\$VAR1 = 'Param';\n" .
+    "\$VAR2 = {\n" .
+    "          'seeing' => {\n" .
+    "                      'value' => '2',\n" .
+    "                      'ucd' => 'instr.obsty.site.seeing',\n" .
+    "                      'units' => 'arcsec'\n" .
+    "                    },\n" .
+    "          'misc' => {\n" .
+    "                    'value' => 'unknown',\n" .
+    "                    'ucd' => 'misc.junk'\n" .
+    "                  }\n" .
+    "        };\n" .
+    "\$VAR3 = 'Group';\n" .
+    "\$VAR4 = [\n" .
+    "          {\n" .
+    "            'Param' => {\n" .
+    "                       'magnitude' => {\n" .
+    "                                      'value' => '13.2',\n" .
+    "                                      'ucd' => 'phot.mag:em.opt.R',\n" .
+    "                                      'units' => 'mag'\n" .
+    "                                    },\n" .
+    "                       'error' => {\n" .
+    "                                  'value' => '0.1',\n" .
+    "                                  'ucd' => 'phot.mag:stat.error',\n" .
+    "                                  'units' => 'mag'\n" .
+    "                                }\n" .
+    "                     }\n" .
+    "          },\n" .
+    "          {\n" .
+    "            'Param' => {\n" .
+    "                       'magnitude' => {\n" .
+    "                                      'value' => '12.5',\n" .
+    "                                      'ucd' => 'phot.mag:em.opt.V',\n" .
+    "                                      'units' => 'mag'\n" .
+    "                                    },\n" .
+    "                       'error' => {\n" .
+    "                                  'value' => '0.1',\n" .
+    "                                  'ucd' => 'phot.mag:stat.error',\n" .
+    "                                  'units' => 'mag'\n" .
+    "                                }\n" .
+    "                     }\n" .
+    "          }\n" .
+    "        ];\n";
+		
+my %what = $object->what( );
+is( Dumper(%what), $what_return, "Comparing <What> in list context" );
+
 
 # T I M E   A T   T H E   B A R ---------------------------------------------
 
