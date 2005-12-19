@@ -10,3 +10,4 @@ t/3_id.t
 t/3_version.t
 t/4_parse.t
 t/4_stc.t
+t/5_swift.t
