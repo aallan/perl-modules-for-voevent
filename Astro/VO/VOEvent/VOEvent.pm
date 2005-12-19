@@ -37,13 +37,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.6 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.7 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.6 2005/12/16 21:30:24 voevent Exp $
+$Id: VOEvent.pm,v 1.7 2005/12/19 14:50:35 voevent Exp $
 
 =head1 METHODS
 
@@ -588,8 +588,11 @@ sub ra {
   if ( defined $self->{DOCUMENT}->{WhereWhen}->{type} &&
        $self->{DOCUMENT}->{WhereWhen}->{type} eq "simple" ) {
        
-
-     $ra{value} = $self->{DOCUMENT}->{WhereWhen}->{RA}->{Coord};
+     if( defined $self->{DOCUMENT}->{WhereWhen}->{RA}->{Coord} ) {
+        $ra{value} = $self->{DOCUMENT}->{WhereWhen}->{RA}->{Coord};
+     } elsif ( defined $self->{DOCUMENT}->{WhereWhen}->{Ra}->{Coord} ) {
+         $ra{value} = $self->{DOCUMENT}->{WhereWhen}->{Ra}->{Coord};
+     }       
      $ra{units} = $self->{DOCUMENT}->{WhereWhen}->{RA}->{units};
      $ra{error} = {"value" => $self->{DOCUMENT}->{WhereWhen}->{RA}->{Error}{value},
                    "units" => $self->{DOCUMENT}->{WhereWhen}->{RA}->{Error}{units}};
@@ -832,7 +835,7 @@ sub _parse {
      }  
   }
   
-  print Dumper( $self->{DOCUMENT} );      
+  #print Dumper( $self->{DOCUMENT} );      
   return;
 }
 
