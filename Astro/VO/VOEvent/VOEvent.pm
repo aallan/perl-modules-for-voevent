@@ -37,13 +37,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.7 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.8 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.7 2005/12/19 14:50:35 voevent Exp $
+$Id: VOEvent.pm,v 1.8 2005/12/19 15:13:11 voevent Exp $
 
 =head1 METHODS
 
@@ -702,6 +702,35 @@ sub equinox {
     }      
   }  
 } 
+
+=item B{time}
+
+Return the Time of the object as given in the <WhereWhen> tag
+
+  $object = new Astro::VO::VOEvent( XML => $scalar );
+  $time = $object->time();
+
+=cut
+
+sub time {
+  my $self = shift;
+  
+  my $time;  
+  if ( defined $self->{DOCUMENT}->{WhereWhen}->{type} &&
+       $self->{DOCUMENT}->{WhereWhen}->{type} eq "simple" ) {
+       
+    $time = $self->{DOCUMENT}->{WhereWhen}->{Time}->{Value};
+    
+  } else { 
+  
+    $time = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+      {"crd:AstroCoords"}->{"crd:Time"}->{"crd:TimeInstant"}->{"crd:ISOTime"};
+
+  }  
+  
+  return $time;
+}
+
 
 =item B{what}
 

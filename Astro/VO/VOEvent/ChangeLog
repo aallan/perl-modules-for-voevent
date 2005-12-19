@@ -1,6 +1,7 @@
 2005-12-19  Alasdair Allan <aa@astro.ex.ac.uk>
 
-        * VOEvent.pm: Fixed casing problem for <WhereWhen type="simple">
+        * VOEvent.pm: Fixed casing problem for <WhereWhen type="simple">,
+          added parsing for date stamp from <WhereWhen>
 
 2005-12-16  Alasdair Allan <aa@astro.ex.ac.uk>
 

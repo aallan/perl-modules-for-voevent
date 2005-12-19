@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 13;
+use Test::More tests => 14;
 
 # load modules
 BEGIN {
@@ -128,6 +128,8 @@ my $what_return =
 my %what = $object->what( );
 is( Dumper(%what), $what_return, "Comparing <What> in list context" );
 
+my $time = $object->time( );
+is( $time, "2005-04-15T23:59:59", "Comparing time stamp" );
 
 # T I M E   A T   T H E   B A R ---------------------------------------------
 
