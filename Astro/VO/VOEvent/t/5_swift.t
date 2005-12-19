@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 13;
+use Test::More tests => 8;
 
 # load modules
 BEGIN {
