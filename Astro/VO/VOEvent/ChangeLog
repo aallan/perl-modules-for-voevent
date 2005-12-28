@@ -1,3 +1,8 @@
+2005-12-28  Alasdair Allan <aa@astro.ex.ac.uk>
+
+       * VOEvent.pm: modifed time() method so it looks in <Who> if there
+         isn't a valid datestamp in the <WhereWhen> tag.
+ 
 2005-12-19  Alasdair Allan <aa@astro.ex.ac.uk>
 
         * VOEvent.pm: Fixed casing problem for <WhereWhen type="simple">,

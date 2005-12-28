@@ -37,13 +37,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.8 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.9 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.8 2005/12/19 15:13:11 voevent Exp $
+$Id: VOEvent.pm,v 1.9 2005/12/28 14:35:21 voevent Exp $
 
 =head1 METHODS
 
@@ -727,6 +727,12 @@ sub time {
       {"crd:AstroCoords"}->{"crd:Time"}->{"crd:TimeInstant"}->{"crd:ISOTime"};
 
   }  
+  
+  # There isn't a (valid?) <WhereWhen> see if there is a timestamp in
+  # the <Who> tag as this might also carry a publication datestamp.
+  unless ( defined $time ) {
+    $time = $self->{DOCUMENT}->{Who}->{Date}->{Value};
+  }
   
   return $time;
 }
