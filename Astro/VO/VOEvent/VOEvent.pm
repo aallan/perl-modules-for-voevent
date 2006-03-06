@@ -37,13 +37,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.10 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.11 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.10 2005/12/28 14:38:30 voevent Exp $
+$Id: VOEvent.pm,v 1.11 2006/03/06 16:56:51 voevent Exp $
 
 =head1 METHODS
 
@@ -130,7 +130,7 @@ or
                                           { Name  => $string,
                                             UCD   => $string,
                                             Value => $string } ],
-                         Hypothesis  => { Classification => { 
+                         Why  => { Classification => { 
                                                    Probability  => $string,
                                                    Type         => $string,
                                                    Description  => string },
@@ -150,7 +150,18 @@ either Reference or WhereWhen (and their sub-tags) are mandatory.
 
 The <Group> tag can be utilised from within the <What> tag as follows
 
-                         What => [ Group => [ { Name  => $string,
+                         What => [ { Group => [ { Name  => $string,
+                                                UCD   => $string,
+                                                Value => $string,
+                                                Units => $string }, 
+                                                  .
+                                                  .
+                                                  .
+                                              { Name  => $string,
+                                                UCD   => $string,
+                                                Value => $string,
+                                                Units => $string } ], },
+                                  { Group => [ { Name  => $string,
                                                 UCD   => $string,
                                                 Value => $string,
                                                 Units => $string },
@@ -160,18 +171,7 @@ The <Group> tag can be utilised from within the <What> tag as follows
                                               { Name  => $string,
                                                 UCD   => $string,
                                                 Value => $string,
-                                                Units => $string } ],
-                                  Group => [ { Name  => $string,
-                                                UCD   => $string,
-                                                Value => $string,
-                                                Units => $string },
-                                                  .
-                                                  .
-                                                  .
-                                              { Name  => $string,
-                                                UCD   => $string,
-                                                Value => $string,
-                                                Units => $string } ],
+                                                Units => $string } ], },
                                   { Name  => $string,
                                     UCD   => $string,
                                     Value => $string,
