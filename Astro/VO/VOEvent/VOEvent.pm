@@ -22,13 +22,8 @@ Or to build a VOEVENT file,
 
 =head1 DESCRIPTION
 
-At moment this module is limited to creation of VOEvent messages as
-discussed in the April workshop meeting at Caltech. Functionality is
-currently very limited.
-
-Parsing is not really implemented, an XML::Parser document tree will
-be returned by the parse() method. This will change when I get a chance
-to do something more useful.
+The module can parse VOEvent messages, and serves as a limited convenience
+layer for building new messages. Functionality is currently very limited.
 
 =cut
 
@@ -47,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.12 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.13 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.12 2006/03/07 15:28:59 voevent Exp $
+$Id: VOEvent.pm,v 1.13 2006/03/07 15:31:01 voevent Exp $
 
 =head1 METHODS
 
