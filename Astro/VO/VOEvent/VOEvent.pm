@@ -7,7 +7,17 @@ eSTAR::RTML - Object interface to parse and create VOEvent messages
 
 =head1 SYNOPSIS
 
-   $rtml = new Astro::VO::VOEvent();
+To parse a VOEvent file,
+
+   $object = new Astro::VO::VOEvent( File => $file_name );
+  
+or    
+
+   $object = new Astro::VO::VOEvent( XML => $scalar );
+   
+Or to build a VOEVENT file,   
+ 
+   $xml = $object->build( %hash );
  
 
 =head1 DESCRIPTION
@@ -37,13 +47,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.11 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.12 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.11 2006/03/06 16:56:51 voevent Exp $
+$Id: VOEvent.pm,v 1.12 2006/03/07 15:28:59 voevent Exp $
 
 =head1 METHODS
 
