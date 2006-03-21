@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.15 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.16 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.15 2006/03/21 09:41:01 voevent Exp $
+$Id: VOEvent.pm,v 1.16 2006/03/21 09:43:16 voevent Exp $
 
 =head1 METHODS
 
@@ -359,11 +359,13 @@ sub build {
       my $position = ${$args{WhereWhen}}{RA} . " " . ${$args{WhereWhen}}{Dec};
       $self->{WRITER}->characters( $position );
       $self->{WRITER}->endTag( 'crd:Value2' );
-      $self->{WRITER}->startTag( 'crd:Error1Circle' );
-      $self->{WRITER}->startTag( 'crd:Size' );
-      $self->{WRITER}->characters( ${$args{WhereWhen}}{Error} );
-      $self->{WRITER}->endTag( 'crd:Size' );
-      $self->{WRITER}->endTag( 'crd:Error1Circle' );
+      if ( exists ${$args{WhereWhen}}{Error} ) {
+        $self->{WRITER}->startTag( 'crd:Error1Circle' );
+        $self->{WRITER}->startTag( 'crd:Size' );
+        $self->{WRITER}->characters( ${$args{WhereWhen}}{Error} );
+        $self->{WRITER}->endTag( 'crd:Size' );
+        $self->{WRITER}->endTag( 'crd:Error1Circle' );
+      }  
       $self->{WRITER}->endTag( 'crd:Position2D' );
       $self->{WRITER}->endTag( 'crd:AstroCoords' );
       $self->{WRITER}->endTag( 'stc:ObservationLocation' );
