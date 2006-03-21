@@ -48,7 +48,7 @@ exit;
 __DATA__
 <?xml version="1.0" encoding="UTF-8"?>
 
-<VOEvent role="test" id="ivo://raptor.lanl/23456789/" version="HTN/0.1">
+<VOEvent role="test" id="ivo://raptor.lanl/23456789/" version="HTN/0.2">
     <Description>This is a bit of human readable text</Description>
     <Reference uri="http://www.raptor.lanl.gov/documents/event233.xml" type="voevent" />
 </VOEvent>

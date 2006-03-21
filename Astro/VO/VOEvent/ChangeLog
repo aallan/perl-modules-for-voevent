@@ -1,3 +1,10 @@
+2006-03-21  Alasdair Allan <aa@astro.ex.ac.uk>
+
+       * VOEvent.pm: Fixed <WhereWhen type="simple"> representation to
+         account for lack of error in the RA and Dec positions. Updated
+         the <Why> to be compliant with VOEvent v1.1 standard. Updated the
+         standard version tags to 1.1x and HTN/0.2 repsectively.
+         
 2005-12-28  Alasdair Allan <aa@astro.ex.ac.uk>
 
        * VOEvent.pm: modifed time() method so it looks in <Who> if there

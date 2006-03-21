@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 65;
+use Test::More tests => 71;
 
 # load modules
 BEGIN {
@@ -71,11 +71,11 @@ my $document = $object->build(
                { Name  => 'misc',
                  UCD   => 'misc.junk',
                  Value => 'unknown' } ],
-       Why  => { Classification => { 
-                           Probability  => '30', Type  => 'ot',
-                           Description => 'Fast Orphan Optical Transient' },
-                        Identification => { 
-                           Type => 'associated', Description => 'NGC1234' } }
+       Why  => [ {Inference => {  Relation     => 'associated',
+                                 Name         => 'NGC1234',
+                                 Concept      => 'Galaxy' }},
+                 {Inference => {  Probability  => '0.3', 
+                                 Concept => 'Fast Orphan Optical Transient' }},                    {Concept => 'Supernova'} ]
                                    
     );
 
@@ -99,7 +99,7 @@ exit;
 __DATA__
 <?xml version="1.0" encoding="UTF-8"?>
 
-<VOEvent role="test" id="ivo://raptor.lanl/23456789/" version="HTN/0.1">
+<VOEvent role="test" id="ivo://raptor.lanl/23456789/" version="HTN/0.2">
     <Description>This is some human readable text.</Description>
     <Who>
         <Publisher>ivo://raptor.lanl</Publisher>
@@ -155,7 +155,13 @@ Los Alamos, NM 87545</Address>
         <Param name="misc" ucd="misc.junk" value="unknown" />
     </What>
     <Why>
-        <Classification probability="30" units="percent" type="ot">Fast Orphan Optical Transient</Classification>
-        <Identification type="associated">NGC1234</Identification>
+        <Inference relation="associated">
+            <Concept>Galaxy</Concept>
+            <Name>NGC1234</Name>
+        </Inference>
+        <Inference probability="0.3">
+            <Concept>Fast Orphan Optical Transient</Concept>
+        </Inference>
+        <Concept>Supernova</Concept>
     </Why>
 </VOEvent>

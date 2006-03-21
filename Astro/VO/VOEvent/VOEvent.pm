@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.13 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.14 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.13 2006/03/07 15:31:01 voevent Exp $
+$Id: VOEvent.pm,v 1.14 2006/03/21 09:32:09 voevent Exp $
 
 =head1 METHODS
 
@@ -125,7 +125,7 @@ or
                                           Time  => $time },
                          How         => { Name     => $string,
                                           Location => $string,
-                                          RTML     => $url ), 
+                                          RTML     => $url }, 
                          What        => [ { Name  => $strig,
                                             UCD   => $string,
                                             Value => $string },
@@ -135,16 +135,24 @@ or
                                           { Name  => $string,
                                             UCD   => $string,
                                             Value => $string } ],
-                         Why  => { Classification => { 
+                         Why  => [ {Inference => { 
                                                    Probability  => $string,
-                                                   Type         => $string,
-                                                   Description  => string },
+                                                   Relation     => $string,
+                                                   Name         => string
+                                                   Concept      => string }},
                                                        .
                                                        .
                                                        . 
-                                          Identification => { 
-                                                   Type        => $string,
-                                                   Description => string } }
+                                   {Inference => { 
+                                                   Probability  => $string,
+                                                   Relation     => $string,
+                                                   Name         => string
+                                                   Concept      => string }},
+                                                      .
+                                                      .
+                                                      . 
+                                   {Name => $string},
+                                   {Concept => $string }  }
                        );
                          
   
@@ -221,7 +229,7 @@ sub build {
           #'type' => $args{Type},
           'role' => $args{Role},
           'id'   => $args{ID},
-	  'version' => '0.1',
+	  'version' => '1.1x',
           'xmlns:stc' => 'http://www.ivoa.net/xml/STC/stc-v1.20.xsd',
           'xmlns:crd' => 'http://www.ivoa.net/xml/STC/STCCoords/v1.20',
           'xmlns:xi'  => 'http://www.w3c.org/2001/XInclude',
@@ -233,7 +241,7 @@ sub build {
           #'type' => $args{Type},
           'role' => $args{Role},
           'id'   => $args{ID},
-	  'version' => 'HTN/0.1' );  
+	  'version' => 'HTN/0.2' );  
   }
                             
   # REFERENCE ONLY -------------------------------------------------------
@@ -367,17 +375,22 @@ sub build {
       $self->{WRITER}->startTag( 'Coord' );
       $self->{WRITER}->characters( ${$args{WhereWhen}}{RA} );
       $self->{WRITER}->endTag( 'Coord' );
-      $self->{WRITER}->emptyTag( 'Error', 
+      if ( defined ${$args{WhereWhen}}{Error} ) {
+         $self->{WRITER}->emptyTag( 'Error', 
                             value => ${$args{WhereWhen}}{Error},
 			    units => "arcmin" );
+      }
       $self->{WRITER}->endTag( 'RA' );
       $self->{WRITER}->startTag( 'Dec', units => 'deg' );
       $self->{WRITER}->startTag( 'Coord' );
       $self->{WRITER}->characters( ${$args{WhereWhen}}{Dec} );
       $self->{WRITER}->endTag( 'Coord' );
-      $self->{WRITER}->emptyTag( 'Error', 
+      
+      if ( defined ${$args{WhereWhen}}{Error} ) {
+         $self->{WRITER}->emptyTag( 'Error', 
                             value => ${$args{WhereWhen}}{Error},
 			    units => "arcmin" );
+      }                      
       $self->{WRITER}->endTag( 'Dec' );  
       $self->{WRITER}->emptyTag( 'Epoch', value => "J2000.0" );      
       $self->{WRITER}->emptyTag( 'Equinox', value => "2000.0" ); 
@@ -478,35 +491,56 @@ sub build {
   # WHY
   if ( exists $args{Why} ) {
      $self->{WRITER}->startTag( 'Why' );
-           
-     if ( exists ${$args{Why}}{Classification} ) {
-        if ( exists ${${$args{Why}}{Classification}}{Probability} ) {
-          $self->{WRITER}->startTag( 'Classification', 
-          'probability' => ${${$args{Why}}{Classification}}{Probability},
-          'units'       => 'percent',
-          'type'        => ${${$args{Why}}{Classification}}{Type});
-          $self->{WRITER}->characters( 
-                        ${${$args{Why}}{Classification}}{Description} );
-          $self->{WRITER}->endTag( 'Classification' );
-        } else {
-          $self->{WRITER}->startTag( 'Classification', 
-                   'type' => ${${$args{Why}}{Classification}}{Type});
-          $self->{WRITER}->characters( 
-                        ${${$args{Why}}{Classification}}{Description} );
-          $self->{WRITER}->endTag( 'Classification' );
-        }         
+     
+     my @array = @{$args{Why}};
+     foreach my $i ( 0 ... $#array ) {
+     
+        my %hash = %{${$args{Why}}[$i]};
+        if ( exists $hash{Inference} ) {
+        
+          if ( exists ${$hash{Inference}}{Relation} &&
+               exists ${$hash{Inference}}{Probability}) {
+            $self->{WRITER}->startTag( 'Inference',
+                   'probability' => ${$hash{Inference}}{Probability},
+                   'relation'    => ${$hash{Inference}}{Relation} );
+          } elsif ( exists ${$hash{Inference}}{Probability}) {
+            $self->{WRITER}->startTag( 'Inference',
+                   'probability' => ${$hash{Inference}}{Probability} );          
+          } elsif ( exists ${$hash{Inference}}{Relation} ) {
+            $self->{WRITER}->startTag( 'Inference',
+                   'relation'    => ${$hash{Inference}}{Relation} );               
+          } else {
+            $self->{WRITER}->startTag( 'Inference');          
+          } 
+          
+          if( exists ${$hash{Inference}}{Concept} ) {
+             $self->{WRITER}->startTag( 'Concept' );
+             $self->{WRITER}->characters( ${$hash{Inference}}{Concept} );         
+             $self->{WRITER}->endTag( 'Concept' );
+          }
+          
+          if ( exists ${$hash{Inference}}{Name} ) {            
+             $self->{WRITER}->startTag( 'Name' );
+             $self->{WRITER}->characters( ${$hash{Inference}}{Name} );         
+             $self->{WRITER}->endTag( 'Name' );                   
+          }                              
+          $self->{WRITER}->endTag( 'Inference' );
+        
+        } elsif( exists $hash{Name} ) {
+          $self->{WRITER}->startTag( 'Name' );
+          $self->{WRITER}->characters( $hash{Name} );         
+          $self->{WRITER}->endTag( 'Name' );
+          
+        } elsif( exists $hash{Concept} ) {  
+          $self->{WRITER}->startTag( 'Concept' );
+          $self->{WRITER}->characters( $hash{Concept} );         
+          $self->{WRITER}->endTag( 'Concept' );
+
+        }                                                     
      }    
-      
-     if ( exists ${$args{Why}}{Identification} ) {
-       $self->{WRITER}->startTag( 'Identification', 
-             'type'   => ${${$args{Why}}{Identification}}{Type});
-       $self->{WRITER}->characters( 
-                        ${${$args{Why}}{Identification}}{Description} );
-       $self->{WRITER}->endTag( 'Identification' );
-     }         
-     
-     
-     $self->{WRITER}->endTag( 'Why' );
+          
+     $self->{WRITER}->endTag( 'Why' );  
+ 
   }  
   
   # END DOCUMENT --------------------------------------------------------- 
