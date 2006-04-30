@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.16 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.17 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.16 2006/03/21 09:43:16 voevent Exp $
+$Id: VOEvent.pm,v 1.17 2006/04/30 10:20:57 voevent Exp $
 
 =head1 METHODS
 
@@ -225,7 +225,8 @@ sub build {
    
   # BEGIN DOCUMENT ------------------------------------------------------- 
   if ( exists $args{UseSTC} ) {
-     $self->{WRITER}->startTag( 'VOEvent', 
+     if ( exists $args{UseID} ) {
+       $self->{WRITER}->startTag( 'VOEvent', 
           #'type' => $args{Type},
           'role' => $args{Role},
           'id'   => $args{ID},
@@ -235,9 +236,22 @@ sub build {
           'xmlns:xi'  => 'http://www.w3c.org/2001/XInclude',
           'xmlns:xsi'  => 'http://www.w3c.org/2001/XMLSchema-instance',
           'xsi:schemaLocation' => 'http://www.ivoa.net/xml/STC/stc-v1.20'
-	  );   
+	  );
+     } else {
+       $self->{WRITER}->startTag( 'VOEvent',
+          #'type' => $args{Type},
+          'role' => $args{Role},
+          'ivorn'   => $args{ID},
+          'version' => '1.1x',
+          'xmlns:stc' => 'http://www.ivoa.net/xml/STC/stc-v1.20.xsd',
+          'xmlns:crd' => 'http://www.ivoa.net/xml/STC/STCCoords/v1.20',
+          'xmlns:xi'  => 'http://www.w3c.org/2001/XInclude',
+          'xmlns:xsi'  => 'http://www.w3c.org/2001/XMLSchema-instance',
+          'xsi:schemaLocation' => 'http://www.ivoa.net/xml/STC/stc-v1.20'
+          ); 
+     }   
   } else {
-     $self->{WRITER}->startTag( 'VOEvent', 
+       $self->{WRITER}->startTag( 'VOEvent', 
           #'type' => $args{Type},
           'role' => $args{Role},
           'id'   => $args{ID},
@@ -566,7 +580,14 @@ Return the id of the VOEvent document
 
 sub id {
   my $self = shift;
-  return $self->{DOCUMENT}->{id};
+
+  my $id;
+  if ( defined $self->{DOCUMENT}->{ivorn} ) {
+    $id = $self->{DOCUMENT}->{ivorn};
+  } else {
+    $id = $self->{DOCUMENT}->{id};
+  }
+  return $id;
 }
 
 =item B<role>
