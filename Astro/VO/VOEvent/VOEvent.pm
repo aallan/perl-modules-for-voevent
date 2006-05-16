@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.18 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.19 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.18 2006/05/16 17:54:47 voevent Exp $
+$Id: VOEvent.pm,v 1.19 2006/05/16 19:10:08 voevent Exp $
 
 =head1 METHODS
 
@@ -703,7 +703,7 @@ sub ra {
                    "units" => $self->{DOCUMENT}->{WhereWhen}->{RA}->{Error}{units}};
   } else {
   
-    #print Dumper( $self->{DOCUMENT}->{WhereWhen} );
+    print Dumper( $self->{DOCUMENT}->{WhereWhen} );
   
     # Try old style eSTAR default
     my $string = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObservationLocation"}->
@@ -734,6 +734,20 @@ sub ra {
       $ra{units} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
         ->{'ObservationLocation'}->{'AstroCoords'}->{'Position2D'}
 	->{unit};     
+    }
+
+    # Try new style v1.1 default with the <ObservatoryLocation> 
+    # and the <AstroCoordsSystem> tags added into the path.
+    unless ( defined $ra{value} ) {
+      $ra{value} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservatoryLocation'}->{'ObservationLocation'}
+	->{'AstroCoordSystem'}->{'AstroCoords'}
+	->{'Position2D'}->{'Value2'}->{'C1'}; 
+
+      $ra{units} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservatoryLocation'}->{'ObservationLocation'}
+	->{'AstroCoordSystem'}->{'AstroCoords'}
+	->{'Position2D'}->{unit};     
     }
 
   }  
@@ -798,6 +812,21 @@ sub dec {
 	->{unit};     
     }
 
+
+    # Try new style v1.1 default with the <ObservatoryLocation> 
+    # and the <AstroCoordsSystem> tags added into the path.
+    unless ( defined $dec{value} ) {
+      $dec{value} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservatoryLocation'}->{'ObservationLocation'}
+	->{'AstroCoordSystem'}->{'AstroCoords'}
+	->{'Position2D'}->{'Value2'}->{'C2'}; 
+
+      $dec{units} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservatoryLocation'}->{'ObservationLocation'}
+	->{'AstroCoordSystem'}->{'AstroCoords'}
+	->{'Position2D'}->{unit};     
+    }
+
   }  
   
   return ( wantarray ? %dec : $dec{"value"} );
@@ -835,6 +864,15 @@ sub epoch {
     unless ( defined $string ) {
       $string = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
         ->{'ObservationLocation'}->{'AstroCoords'}->{"coord_system_id"};
+    }
+
+    # Try new style v1.1 default with <ObservatoryLocation> and
+    # <AstroCoordSystem> tags
+    unless ( defined $string ) {
+      $string = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservatoryLocation'}->{'ObservationLocation'}
+	->{'AstroCoordSystem'}->{'AstroCoords'}
+	->{"coord_system_id"};
     }
         		   			
     if( $string =~ "FK5" ) {
@@ -879,7 +917,16 @@ sub equinox {
       $string = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
         ->{'ObservationLocation'}->{'AstroCoords'}->{"coord_system_id"};
     }
-        			
+
+    # Try new style v1.1 default with <ObservatoryLocation> and
+    # the <AstroCoordSystem> tags
+    unless ( defined $string ) {
+      $string = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservatoryLocation'}->{'ObservationLocation'}
+	->{'AstroCoordSystem'}->{'AstroCoords'}
+	->{"coord_system_id"};
+    }
+            			
     if( $string =~ "FK5" ) {
        return "2000.0";
     } else {
@@ -927,6 +974,16 @@ sub time {
         ->{'ObservationLocation'}->{'AstroCoords'}->{"Time"}
 	->{"TimeInstant"}->{"ISOTime"};
     }
+    
+
+    # Try new style v1.1 default with <ObservatoryLocation> and
+    # the <AstroCoordSystem> tags
+    unless ( defined $time ) {
+      $time = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservatoryLocation'}->{'ObservationLocation'}
+	->{'AstroCoordSystem'}->{'AstroCoords'}
+	->{"Time"}->{"TimeInstant"}->{"ISOTime"};
+    }    
   }  
   
   # There isn't a (valid?) <WhereWhen> see if there is a timestamp in

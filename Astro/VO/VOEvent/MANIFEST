@@ -15,3 +15,4 @@ t/4_parse.t
 t/4_raptor.t
 t/4_stc.t
 t/5_swift.t
+t/5_test.t
