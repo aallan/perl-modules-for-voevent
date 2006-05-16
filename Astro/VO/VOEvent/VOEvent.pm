@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.17 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.18 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.17 2006/04/30 10:20:57 voevent Exp $
+$Id: VOEvent.pm,v 1.18 2006/05/16 17:54:47 voevent Exp $
 
 =head1 METHODS
 
@@ -231,11 +231,11 @@ sub build {
           'role' => $args{Role},
           'id'   => $args{ID},
 	  'version' => '1.1x',
-          'xmlns:stc' => 'http://www.ivoa.net/xml/STC/stc-v1.20.xsd',
-          'xmlns:crd' => 'http://www.ivoa.net/xml/STC/STCCoords/v1.20',
-          'xmlns:xi'  => 'http://www.w3c.org/2001/XInclude',
-          'xmlns:xsi'  => 'http://www.w3c.org/2001/XMLSchema-instance',
-          'xsi:schemaLocation' => 'http://www.ivoa.net/xml/STC/stc-v1.20'
+	  'xmlns' => 'http://www.ivoa.net/xml/VOEvent/v1.1',
+          'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+	  'xsi:schemaLocation' =>
+	     'http://www.ivoa.net/xml/VOEvent/v1.1 ' . 
+	     'http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd'
 	  );
      } else {
        $self->{WRITER}->startTag( 'VOEvent',
@@ -243,11 +243,11 @@ sub build {
           'role' => $args{Role},
           'ivorn'   => $args{ID},
           'version' => '1.1x',
-          'xmlns:stc' => 'http://www.ivoa.net/xml/STC/stc-v1.20.xsd',
-          'xmlns:crd' => 'http://www.ivoa.net/xml/STC/STCCoords/v1.20',
-          'xmlns:xi'  => 'http://www.w3c.org/2001/XInclude',
-          'xmlns:xsi'  => 'http://www.w3c.org/2001/XMLSchema-instance',
-          'xsi:schemaLocation' => 'http://www.ivoa.net/xml/STC/stc-v1.20'
+	  'xmlns' => 'http://www.ivoa.net/xml/VOEvent/v1.1',
+          'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+	  'xsi:schemaLocation' =>
+	     'http://www.ivoa.net/xml/VOEvent/v1.1 ' . 
+	     'http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd'
           ); 
      }   
   } else {
@@ -354,35 +354,79 @@ sub build {
    
   # WHERE & WHEN  
   if ( exists $args{UseSTC} ) {
+ 
       $self->{WRITER}->startTag( 'WhereWhen' );
-      $self->{WRITER}->startTag( 'stc:ObservationLocation' );
-      $self->{WRITER}->startTag( 'crd:AstroCoords',
-        		      'coord_system_id' => 'FK5-UTC' );
-      $self->{WRITER}->startTag( 'crd:Time', 'unit' => 's' );
-      $self->{WRITER}->startTag( 'crd:TimeInstant' );
-      $self->{WRITER}->startTag( 'crd:TimeScale' );
-      $self->{WRITER}->characters( 'UTC' );
-      $self->{WRITER}->endTag( 'crd:TimeScale' );
-      $self->{WRITER}->startTag( 'crd:ISOTime' );
+      $self->{WRITER}->startTag( 'ObsDataLocation', 
+        'xmlns' => 'http://www.ivoa.net/xml/STC/stc-v1.30.xsd',  
+        'xmlns:xlink' => 'http://www.w3.org/1999/xlink' );
+      $self->{WRITER}->startTag( 'ObservatoryLocation',
+        'id' => "GEOLUN",
+	'xlink:type' => 'simple', 
+        'xlink:href' => 'ivo://STClib/Observatories#GEOLUN' );
+      $self->{WRITER}->startTag( 'ObservationLocation' );
+      $self->{WRITER}->startTag( 'AstroCoordSystem',
+        'id' => 'UTC-FKC-GEO',
+	'xlink:type' => 'simple',  
+	'xlink:href' => 'ivo://STClib/CoordSys#UTC-FK5-GEO/' );
+      $self->{WRITER}->startTag( 'AstroCoords',
+        'coord_system_id' => 'UTC-FK5-GEO' );
+      $self->{WRITER}->startTag( 'Time', 'unit' => 's' );
+      $self->{WRITER}->startTag( 'TimeInstant' );
+      $self->{WRITER}->startTag( 'ISOTime' );
       $self->{WRITER}->characters( ${$args{WhereWhen}}{Time} );
-      $self->{WRITER}->endTag( 'crd:ISOTime' );
-      $self->{WRITER}->endTag( 'crd:TimeInstant' );
-      $self->{WRITER}->endTag( 'crd:Time' );
-      $self->{WRITER}->startTag( 'crd:Position2D', 'unit' => 'deg' );
-      $self->{WRITER}->startTag( 'crd:Value2');
-      my $position = ${$args{WhereWhen}}{RA} . " " . ${$args{WhereWhen}}{Dec};
-      $self->{WRITER}->characters( $position );
-      $self->{WRITER}->endTag( 'crd:Value2' );
+      $self->{WRITER}->endTag( 'ISOTime' );
+      $self->{WRITER}->endTag( 'TimeInstant' );
+      $self->{WRITER}->endTag( 'Time' );						
+      $self->{WRITER}->startTag( 'Position2D', 'unit' => 'deg' );
+      $self->{WRITER}->startTag( 'Value2' );
+      $self->{WRITER}->startTag( 'C1' );							
+      $self->{WRITER}->characters( ${$args{WhereWhen}}{RA} );
+      $self->{WRITER}->endTag( 'C1' );
+      $self->{WRITER}->startTag( 'C2' );							
+      $self->{WRITER}->characters( ${$args{WhereWhen}}{Dec} );
+      $self->{WRITER}->endTag( 'C2' );
+      $self->{WRITER}->endTag( 'Value2' );
       if ( exists ${$args{WhereWhen}}{Error} ) {
-        $self->{WRITER}->startTag( 'crd:Error1Circle' );
-        $self->{WRITER}->startTag( 'crd:Size' );
+        $self->{WRITER}->startTag( 'Error2Radius' );
         $self->{WRITER}->characters( ${$args{WhereWhen}}{Error} );
-        $self->{WRITER}->endTag( 'crd:Size' );
-        $self->{WRITER}->endTag( 'crd:Error1Circle' );
+        $self->{WRITER}->endTag( 'Error2Radius' );
       }  
-      $self->{WRITER}->endTag( 'crd:Position2D' );
-      $self->{WRITER}->endTag( 'crd:AstroCoords' );
-      $self->{WRITER}->endTag( 'stc:ObservationLocation' );
+      $self->{WRITER}->endTag( 'Position2D' );
+      $self->{WRITER}->endTag( 'AstroCoords' );
+      $self->{WRITER}->endTag( 'AstroCoordSystem' );
+      $self->{WRITER}->endTag( 'ObservationLocation' );
+      $self->{WRITER}->endTag( 'ObservatoryLocation' );
+      $self->{WRITER}->endTag( 'ObsDataLocation' );
+  
+      #$self->{WRITER}->startTag( 'WhereWhen' );
+      #$self->{WRITER}->startTag( 'stc:ObservationLocation' );
+      #$self->{WRITER}->startTag( 'crd:AstroCoords',
+      #  		      'coord_system_id' => 'FK5-UTC' );
+      #$self->{WRITER}->startTag( 'crd:Time', 'unit' => 's' );
+      #$self->{WRITER}->startTag( 'crd:TimeInstant' );
+      #$self->{WRITER}->startTag( 'crd:TimeScale' );
+      #$self->{WRITER}->characters( 'UTC' );
+      #$self->{WRITER}->endTag( 'crd:TimeScale' );
+      #$self->{WRITER}->startTag( 'crd:ISOTime' );
+      #$self->{WRITER}->characters( ${$args{WhereWhen}}{Time} );
+      #$self->{WRITER}->endTag( 'crd:ISOTime' );
+      #$self->{WRITER}->endTag( 'crd:TimeInstant' );
+      #$self->{WRITER}->endTag( 'crd:Time' );
+      #$self->{WRITER}->startTag( 'crd:Position2D', 'unit' => 'deg' );
+      #$self->{WRITER}->startTag( 'crd:Value2');
+      #my $position = ${$args{WhereWhen}}{RA} . " " . ${$args{WhereWhen}}{Dec};
+      #$self->{WRITER}->characters( $position );
+      #$self->{WRITER}->endTag( 'crd:Value2' );
+      #if ( exists ${$args{WhereWhen}}{Error} ) {
+      #  $self->{WRITER}->startTag( 'crd:Error1Circle' );
+      #  $self->{WRITER}->startTag( 'crd:Size' );
+      #  $self->{WRITER}->characters( ${$args{WhereWhen}}{Error} );
+      #  $self->{WRITER}->endTag( 'crd:Size' );
+      #  $self->{WRITER}->endTag( 'crd:Error1Circle' );
+      #}  
+      #$self->{WRITER}->endTag( 'crd:Position2D' );
+      #$self->{WRITER}->endTag( 'crd:AstroCoords' );
+      #$self->{WRITER}->endTag( 'stc:ObservationLocation' );
   } else {
       $self->{WRITER}->startTag( 'WhereWhen', 
                                  'type' => 'simple', );
@@ -659,13 +703,38 @@ sub ra {
                    "units" => $self->{DOCUMENT}->{WhereWhen}->{RA}->{Error}{units}};
   } else {
   
-    my $string = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+    #print Dumper( $self->{DOCUMENT}->{WhereWhen} );
+  
+    # Try old style eSTAR default
+    my $string = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObservationLocation"}->
                         {"crd:AstroCoords"}->{"crd:Position2D"}->{"crd:Value2"};
-    my ($ra, $dec) = split " ", $string;
+    my ($ra, $dec) = split " ", $string if defined $string;
     
     $ra{value} = $ra;
-    $ra{units} =  $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+    $ra{units} =  $self->{DOCUMENT}->{WhereWhen}->{"stc:ObservationLocation"}->
                         {"crd:AstroCoords"}->{"crd:Position2D"}->{unit};
+
+    # Try RAPTOR default
+    unless ( defined $ra{value} ) {
+      $ra{value} = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObsDataLocation"}
+       ->{"stc:ObservationLocation"}->{"stc:AstroCoords"}->{"stc:Position2D"}
+       ->{"stc:Value2"}->{"stc:C1"};
+       
+      $ra{units} = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObsDataLocation"}
+       ->{"stc:ObservationLocation"}->{"stc:AstroCoords"}->{"stc:Position2D"}
+       ->{unit};       
+    }   
+    
+    # Try new style v1.1 default
+    unless ( defined $ra{value} ) {
+      $ra{value} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{'Position2D'}
+	->{'Value2'}->{'C1'}; 
+
+      $ra{units} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{'Position2D'}
+	->{unit};     
+    }
 
   }  
   
@@ -696,13 +765,38 @@ sub dec {
                    "units"=>$self->{DOCUMENT}->{WhereWhen}->{Dec}->{Error}{units}};
   } else {
   
-    my $string = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+    # Try old style eSTAR default
+    my $string = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObservationLocation"}->
                         {"crd:AstroCoords"}->{"crd:Position2D"}->{"crd:Value2"};
-    my ($ra, $dec) = split " ", $string;
+    my ($ra, $dec) = split " ", $string if defined $string;
     
     $dec{value} = $dec;
-    $dec{units} = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+    $dec{units} = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObservationLocation"}->
                         {"crd:AstroCoords"}->{"crd:Position2D"}->{unit};
+
+
+    # Try RAPTOR default
+    unless ( defined $dec{value} ) {
+      $dec{value} = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObsDataLocation"}
+       ->{"stc:ObservationLocation"}->{"stc:AstroCoords"}->{"stc:Position2D"}
+       ->{"stc:Value2"}->{"stc:C2"};
+       
+      $dec{units} = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObsDataLocation"}
+       ->{"stc:ObservationLocation"}->{"stc:AstroCoords"}->{"stc:Position2D"}
+       ->{unit};
+       
+    } 
+    
+    # Try new style v1.1 default
+    unless ( defined $dec{value} ) {
+      $dec{value} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{'Position2D'}
+	->{'Value2'}->{'C2'}; 
+
+      $dec{units} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{'Position2D'}
+	->{unit};     
+    }
 
   }  
   
@@ -726,8 +820,23 @@ sub epoch {
        return $self->{DOCUMENT}->{WhereWhen}->{Epoch}->{value};
   } else {
  
-    my $string = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+    # old style eSTAR default
+    my $string = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObservationLocation"}->
                         {"crd:AstroCoords"}->{"coord_system_id"};
+	
+    # RAPTOR default
+    unless (defined $string ) {
+       $string =  $self->{DOCUMENT}->{WhereWhen}->{"stc:ObsDataLocation"}
+                   ->{"stc:ObservationLocation"}->{"stc:AstroCoords"}
+		   ->{"coord_system_id"};
+    }
+    
+    # new style v1.1 default
+    unless ( defined $string ) {
+      $string = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{"coord_system_id"};
+    }
+        		   			
     if( $string =~ "FK5" ) {
        return "J2000.0";
     } else {
@@ -754,8 +863,23 @@ sub equinox {
        return $self->{DOCUMENT}->{WhereWhen}->{Equinox}->{value};
   } else {
  
-    my $string = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+    # eSTAR default
+    my $string = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObservationLocation"}->
                         {"crd:AstroCoords"}->{"coord_system_id"};
+			
+    # RAPTOR default
+    unless (defined $string ) {
+       $string =  $self->{DOCUMENT}->{WhereWhen}->{"stc:ObsDataLocation"}
+                   ->{"stc:ObservationLocation"}->{"stc:AstroCoords"}
+		   ->{"coord_system_id"};
+    }
+    
+    # new style v1.1 default
+    unless ( defined $string ) {
+      $string = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{"coord_system_id"};
+    }
+        			
     if( $string =~ "FK5" ) {
        return "2000.0";
     } else {
@@ -784,9 +908,25 @@ sub time {
     
   } else { 
   
-    $time = $self->{DOCUMENT}->{WhereWhen}->{ObservationLocation}->
+    # old style eSTAR default
+    $time = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObservationLocation"}->
       {"crd:AstroCoords"}->{"crd:Time"}->{"crd:TimeInstant"}->{"crd:ISOTime"};
-
+    
+    # RAPTOR default  
+    unless ( defined $time ) {
+        
+       $time = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObsDataLocation"}
+                    ->{"stc:ObservationLocation"}->{"stc:AstroCoords"}
+		    ->{"stc:Time"}->{"stc:TimeInstant"}->{"stc:ISOTime"};
+	      
+    }		        
+    
+    # new style v1.1 default
+    unless ( defined $time ) {
+      $time = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{"Time"}
+	->{"TimeInstant"}->{"ISOTime"};
+    }
   }  
   
   # There isn't a (valid?) <WhereWhen> see if there is a timestamp in

@@ -161,7 +161,7 @@ __DATA__
   </What>
     
   <WhereWhen>
-    <ObservationLocation>
+    <stc:ObservationLocation>
       <stc:AstroCoordSystem ID="FK5-UTC-TOPO">
 	<stc:TimeFrame>
 	  <stc:Name>Time</stc:Name>

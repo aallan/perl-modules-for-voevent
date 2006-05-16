@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 73;
+use Test::More tests => 79;
 
 # load modules
 BEGIN {
@@ -100,7 +100,7 @@ exit;
 __DATA__
 <?xml version="1.0" encoding="UTF-8"?>
 
-<VOEvent role="test" ivorn="ivo://raptor.lanl/23456789/" version="1.1x" xmlns:stc="http://www.ivoa.net/xml/STC/stc-v1.20.xsd" xmlns:crd="http://www.ivoa.net/xml/STC/STCCoords/v1.20" xmlns:xi="http://www.w3c.org/2001/XInclude" xmlns:xsi="http://www.w3c.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/STC/stc-v1.20">
+<VOEvent role="test" ivorn="ivo://raptor.lanl/23456789/" version="1.1x" xmlns="http://www.ivoa.net/xml/VOEvent/v1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOEvent/v1.1 http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd">
     <Description>This is some human readable text.</Description>
     <Who>
         <Publisher>ivo://raptor.lanl</Publisher>
@@ -121,22 +121,28 @@ Los Alamos, NM 87545</Address>
         <EventID cite="associated">ivo://estar.org/1234567/aa/</EventID>
     </Citations>
     <WhereWhen>
-        <stc:ObservationLocation>
-            <crd:AstroCoords coord_system_id="FK5-UTC">
-                <crd:Time unit="s">
-                    <crd:TimeInstant>
-                        <crd:TimeScale>UTC</crd:TimeScale>
-                        <crd:ISOTime>2005-04-15T23:59:59</crd:ISOTime>
-                    </crd:TimeInstant>
-                </crd:Time>
-                <crd:Position2D unit="deg">
-                    <crd:Value2>148.888 69.065</crd:Value2>
-                    <crd:Error1Circle>
-                        <crd:Size>4</crd:Size>
-                    </crd:Error1Circle>
-                </crd:Position2D>
-            </crd:AstroCoords>
-        </stc:ObservationLocation>
+        <ObsDataLocation xmlns="http://www.ivoa.net/xml/STC/stc-v1.30.xsd" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <ObservatoryLocation id="GEOLUN" xlink:type="simple" xlink:href="ivo://STClib/Observatories#GEOLUN">
+                <ObservationLocation>
+                    <AstroCoordSystem id="UTC-FKC-GEO" xlink:type="simple" xlink:href="ivo://STClib/CoordSys#UTC-FK5-GEO/">
+                        <AstroCoords coord_system_id="UTC-FK5-GEO">
+                            <Time unit="s">
+                                <TimeInstant>
+                                    <ISOTime>2005-04-15T23:59:59</ISOTime>
+                                </TimeInstant>
+                            </Time>
+                            <Position2D unit="deg">
+                                <Value2>
+                                    <C1>148.888</C1>
+                                    <C2>69.065</C2>
+                                </Value2>
+                                <Error2Radius>4</Error2Radius>
+                            </Position2D>
+                        </AstroCoords>
+                    </AstroCoordSystem>
+                </ObservationLocation>
+            </ObservatoryLocation>
+        </ObsDataLocation>
     </WhereWhen>
     <How>
         <Instrument>
