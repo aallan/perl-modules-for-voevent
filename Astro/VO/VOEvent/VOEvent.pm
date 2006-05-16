@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.19 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.20 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.19 2006/05/16 19:10:08 voevent Exp $
+$Id: VOEvent.pm,v 1.20 2006/05/16 19:10:47 voevent Exp $
 
 =head1 METHODS
 
@@ -703,7 +703,7 @@ sub ra {
                    "units" => $self->{DOCUMENT}->{WhereWhen}->{RA}->{Error}{units}};
   } else {
   
-    print Dumper( $self->{DOCUMENT}->{WhereWhen} );
+    #print Dumper( $self->{DOCUMENT}->{WhereWhen} );
   
     # Try old style eSTAR default
     my $string = $self->{DOCUMENT}->{WhereWhen}->{"stc:ObservationLocation"}->
