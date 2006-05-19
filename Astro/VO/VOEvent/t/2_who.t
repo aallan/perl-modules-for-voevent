@@ -99,7 +99,7 @@ exit;
 __DATA__
 <?xml version="1.0" encoding="UTF-8"?>
 
-<voe:VOEvent role="test" ivorn="ivo://raptor.lanl/23456789/" version="1.1x" xmlns:voe="http://www.ivoa.net/xml/VOEvent/v1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOEvent/v1.1 http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd">
+<voe:VOEvent role="test" ivorn="ivo://raptor.lanl/23456789/" version="1.1" xmlns:voe="http://www.ivoa.net/xml/VOEvent/v1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOEvent/v1.1 http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd">
     <Description>This is some human readable text.</Description>
     <Who>
         <AuthorIVORN>ivo://raptor.lanl</AuthorIVORN>
