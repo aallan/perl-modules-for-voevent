@@ -30,6 +30,7 @@ my $address = "Los Alamos National Laboratory,\n" .
               "Los Alamos, NM 87545";
               
 my $document = $object->build( 
+     UseHTN => 1,
      Role => 'test',
      ID   => 'ivo://raptor.lanl/23456789/',
      Description => 'This is some human readable text.',

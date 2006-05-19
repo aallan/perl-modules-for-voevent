@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.21 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.22 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.21 2006/05/19 19:08:32 voevent Exp $
+$Id: VOEvent.pm,v 1.22 2006/05/19 21:36:56 voevent Exp $
 
 =head1 METHODS
 
@@ -224,39 +224,52 @@ sub build {
   $self->{WRITER}->xmlDecl( 'UTF-8' );
    
   # BEGIN DOCUMENT ------------------------------------------------------- 
-  if ( exists $args{UseSTC} ) {
-     if ( exists $args{UseID} ) {
-       $self->{WRITER}->startTag( 'VOEvent', 
-          #'type' => $args{Type},
-          'role' => $args{Role},
-          'id'   => $args{ID},
-	  'version' => '1.1x',
-	  'xmlns' => 'http://www.ivoa.net/xml/VOEvent/v1.1',
-          'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-	  'xsi:schemaLocation' =>
-	     'http://www.ivoa.net/xml/VOEvent/v1.1 ' . 
-	     'http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd'
-	  );
-     } else {
-       $self->{WRITER}->startTag( 'VOEvent',
-          #'type' => $args{Type},
-          'role' => $args{Role},
-          'ivorn'   => $args{ID},
-          'version' => '1.1x',
-	  'xmlns' => 'http://www.ivoa.net/xml/VOEvent/v1.1',
-          'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-	  'xsi:schemaLocation' =>
-	     'http://www.ivoa.net/xml/VOEvent/v1.1 ' . 
-	     'http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd'
-          ); 
-     }   
-  } else {
-       $self->{WRITER}->startTag( 'VOEvent', 
-          #'type' => $args{Type},
-          'role' => $args{Role},
-          'id'   => $args{ID},
-	  'version' => 'HTN/0.2' );  
-  }
+  if ( exists $args{UseHTN} ) {
+     $self->{WRITER}->startTag( 'VOEvent', 
+        #'type' => $args{Type},
+        'role' => $args{Role},
+        'id'   => $args{ID},
+      	'version' => 'HTN/0.2' );  
+  } elsif ( exists $args{UseQualified} ) {
+        if ( exists $args{UseID} ) {
+          $self->{WRITER}->startTag( 'VOEvent', 
+             #'type' => $args{Type},
+             'role' => $args{Role},
+                'id'   => $args{ID},
+	     'version' => '1.1',
+	     'xmlns' => 'http://www.ivoa.net/xml/VOEvent/v1.1',
+             'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+	     'xsi:schemaLocation' =>
+	        'http://www.ivoa.net/xml/VOEvent/v1.1 ' . 
+	        'http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd'
+	     );
+        } else {
+          $self->{WRITER}->startTag( 'VOEvent',
+             #'type' => $args{Type},
+             'role' => $args{Role},
+             'ivorn'   => $args{ID},
+             'version' => '1.1',
+	     'xmlns' => 'http://www.ivoa.net/xml/VOEvent/v1.1',
+             'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+	     'xsi:schemaLocation' =>
+	        'http://www.ivoa.net/xml/VOEvent/v1.1 ' . 
+	        'http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd'
+             ); 
+        }
+   } else {	
+         $self->{WRITER}->startTag( 'voe:VOEvent',
+             #'type' => $args{Type},
+             'role' => $args{Role},
+             'ivorn'   => $args{ID},
+             'version' => '1.1',
+	     'xmlns:voe' => 'http://www.ivoa.net/xml/VOEvent/v1.1',
+             'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+	     'xsi:schemaLocation' =>
+	        'http://www.ivoa.net/xml/VOEvent/v1.1 ' . 
+	        'http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd'
+             ); 
+	   
+   }
                             
   # REFERENCE ONLY -------------------------------------------------------
                              
@@ -272,7 +285,11 @@ sub build {
                                 'type' => ${$args{Reference}}{Type} );
   
        
-     $self->{WRITER}->endTag( 'VOEvent' );
+     if( exists $args{UseHTN} || exists $args{UseQualified} ) {
+       $self->{WRITER}->endTag( 'VOEvent' );
+     } else {
+       $self->{WRITER}->endTag( 'voe:VOEvent' );
+     }
      $self->{WRITER}->end();
      
      return $self->{BUFFER}->value();
@@ -421,7 +438,7 @@ sub build {
   }
    
   # WHERE & WHEN  
-  if ( exists $args{UseSTC} ) {
+  unless ( exists $args{UseHTN} ) {
  
       $self->{WRITER}->startTag( 'WhereWhen' );
       $self->{WRITER}->startTag( 'ObsDataLocation', 
@@ -671,7 +688,11 @@ sub build {
   }  
   
   # END DOCUMENT --------------------------------------------------------- 
-  $self->{WRITER}->endTag( 'VOEvent' );
+  if( exists $args{UseHTN} || exists $args{UseQualified} ) {
+    $self->{WRITER}->endTag( 'VOEvent' );
+  } else {
+    $self->{WRITER}->endTag( 'voe:VOEvent' );
+  }
   $self->{WRITER}->end();
   
   my $xml = $self->{BUFFER}->value();

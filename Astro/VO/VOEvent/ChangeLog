@@ -1,10 +1,11 @@
-2006-05-19  Alasdair Allan <aa@astro.ex.ac.uk> (Fully supports 1.1?)
+2006-05-19  Alasdair Allan <aa@astro.ex.ac.uk> (Supports V1.1 PR)
 
 	* VOEvent.pm: Fixed <Who> block, doesn't seem as flexible as the
 	  tags we initially inherited from RTML. Tried to preserve the
 	  old API, but added a new API for v1.1 as well. Both are supported
 	  to build messages, but both emit the new tags. Also fixed the
-	  <Citation> block from <EventID> to <EventIVORN>.
+	  <Citation> block from <EventID> to <EventIVORN>. Also moved to
+	  unqualifed namespace for XPath queries.
 	  
 2006-05-16  Alasdair Allan <aa@astro.ex.ac.uk>
 
