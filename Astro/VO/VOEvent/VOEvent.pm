@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.20 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.21 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.20 2006/05/16 19:10:47 voevent Exp $
+$Id: VOEvent.pm,v 1.21 2006/05/19 19:08:32 voevent Exp $
 
 =head1 METHODS
 
@@ -290,46 +290,108 @@ sub build {
   # WHO
   if ( exists $args{Who} ) {
      $self->{WRITER}->startTag( 'Who' );
-  
-     if ( exists ${$args{Who}}{Publisher} ) {
-       $self->{WRITER}->startTag( 'Publisher' );
-       $self->{WRITER}->characters( ${$args{Who}}{Publisher} );
-       $self->{WRITER}->endTag( 'Publisher' );
+     
+     if ( exists ${$args{Who}}{Publisher} && ${$args{Who}}{Publisher} =~ 'ivo:' ) {
+      	$self->{WRITER}->startTag( 'AuthorIVORN' );
+     	$self->{WRITER}->characters( ${$args{Who}}{Publisher} );
+     	$self->{WRITER}->endTag( 'AuthorIVORN' );
      }
-     if ( exists ${$args{Who}}{Contact} ) {
-       $self->{WRITER}->startTag( 'Contact' );
-       if ( exists ${${$args{Who}}{Contact}}{Name} ) {
-          $self->{WRITER}->startTag( 'Name' );
-          $self->{WRITER}->characters( 
-                             ${${$args{Who}}{Contact}}{Name} );
-          $self->{WRITER}->endTag( 'Name' );          
-       }           
+     
+     my $author_flag = 0;
+     if ( exists ${$args{Who}}{Publisher} && 
+            ( ! (${$args{Who}}{Publisher} =~ 'ivo:') || exists ${$args{Who}}{Contact} ) )  {
+        $self->{WRITER}->startTag( 'Author' );
+	$author_flag = 1;
+     }	  
+     
+     # Backward compatible interface to older API, translate as much as possible the
+     # RTML based <Who> format into the new IVOA RM format used in v1.1
+     if ( exists ${$args{Who}}{Publisher} && 
+          ! ${$args{Who}}{Publisher} =~ 'ivo:' ) {
+        $self->{WRITER}->startTag( 'title' );
+        $self->{WRITER}->characters( ${$args{Who}}{Publisher} );
+        $self->{WRITER}->endTag( 'title' );
+     }
+     if ( exists ${$args{Who}}{Contact} ) {         
        if ( exists ${${$args{Who}}{Contact}}{Institution} ) {
-          $self->{WRITER}->startTag( 'Institution' );
-          $self->{WRITER}->characters( 
-                             ${${$args{Who}}{Contact}}{Institution} );
-          $self->{WRITER}->endTag( 'Institution' );          
-       }
+             $self->{WRITER}->startTag( 'shortName' );
+	     $self->{WRITER}->characters( ${${$args{Who}}{Contact}}{Institution} ); 
+             $self->{WRITER}->endTag( 'shortName' );
+       } 
        if ( exists ${${$args{Who}}{Contact}}{Address} ) {
-          $self->{WRITER}->startTag( 'Address' );
-          $self->{WRITER}->characters( 
-                             ${${$args{Who}}{Contact}}{Address} );
-          $self->{WRITER}->endTag( 'Address' );          
+	     $self->{WRITER}->startTag( 'contributor' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Contact}}{Address}  );
+             $self->{WRITER}->endTag( 'contributor' );                
        }   
+       if ( exists ${${$args{Who}}{Contact}}{Name} ) {
+             $self->{WRITER}->startTag( 'contactName' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Contact}}{Name} );
+             $self->{WRITER}->endTag( 'contactName' );
+       }  
        if ( exists ${${$args{Who}}{Contact}}{Telephone} ) {
-          $self->{WRITER}->startTag( 'Telephone' );
-          $self->{WRITER}->characters( 
-                             ${${$args{Who}}{Contact}}{Telephone} );
-          $self->{WRITER}->endTag( 'Telephone' );          
+             $self->{WRITER}->startTag( 'contactPhone' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Contact}}{Telephone} );
+             $self->{WRITER}->endTag( 'contactPhone' );          
        }   
        if ( exists ${${$args{Who}}{Contact}}{Email} ) {
-          $self->{WRITER}->startTag( 'Email' );
-          $self->{WRITER}->characters( 
-                             ${${$args{Who}}{Contact}}{Email} );
-          $self->{WRITER}->endTag( 'Email' );          
+             $self->{WRITER}->startTag( 'contactEmail' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Contact}}{Email} );
+             $self->{WRITER}->endTag( 'contactEmail' );         
        }    
-       $self->{WRITER}->endTag( 'Contact' );
+   
      }
+       
+     if ( $author_flag == 1 ) {
+        $self->{WRITER}->endTag( 'Author' );
+     }    
+          
+     # The new 1.1 format
+     if ( exists ${$args{Who}}{AuthorIVORN} ) {
+          $self->{WRITER}->startTag( 'AuthorIVORN' );
+          $self->{WRITER}->characters( ${$args{Who}}{AuthorIVORN} );
+          $self->{WRITER}->endTag( 'AuthorIVORN' );     
+     }
+     if ( exists ${$args{Who}}{Author} ) {
+       $self->{WRITER}->startTag( 'Author' );
+          if( exists ${${$args{Who}}{Author}}{Title} ) { 
+             $self->{WRITER}->startTag( 'title' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Author}}{Title} );
+             $self->{WRITER}->endTag( 'title' );
+          }
+          if( exists ${${$args{Who}}{Author}}{ShortName} ) { 
+             $self->{WRITER}->startTag( 'shortName' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Author}}{ShortName} );
+             $self->{WRITER}->endTag( 'shortName' );
+          }
+          if( exists ${${$args{Who}}{Author}}{Contributor} ) { 
+             $self->{WRITER}->startTag( 'contributor' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Author}}{Contributor} );
+             $self->{WRITER}->endTag( 'contributor' );
+          }
+          if( exists ${${$args{Who}}{Author}}{LogoURL} ) { 
+             $self->{WRITER}->startTag( 'logoURL' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Author}}{LogoURL} );
+             $self->{WRITER}->endTag( 'logoURL' );
+          }
+          if( exists ${${$args{Who}}{Author}}{ContactName} ) { 
+             $self->{WRITER}->startTag( 'contactName' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Author}}{ContactName} );
+             $self->{WRITER}->endTag( 'contactName' );
+          }
+          if( exists ${${$args{Who}}{Author}}{ContactEmail}  ) { 
+             $self->{WRITER}->startTag( 'contactEmail' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Author}}{ContactEmail} );
+             $self->{WRITER}->endTag( 'contactEmail' );
+          }
+          if( exists ${${$args{Who}}{Author}}{ContactPhone} ) { 
+             $self->{WRITER}->startTag( 'contactPhone' );
+             $self->{WRITER}->characters( ${${$args{Who}}{Author}}{ContactPhone} );
+             $self->{WRITER}->endTag( 'contactPhone' );
+          }	  
+       $self->{WRITER}->endTag( 'Author' );
+     }
+     
+     # The <date> tag didn't change between 1.0 and 1.1     
      if ( exists ${$args{Who}}{Date} ) {
        $self->{WRITER}->startTag( 'Date' );
        $self->{WRITER}->characters( ${$args{Who}}{Date} );
@@ -345,9 +407,15 @@ sub build {
      
      my @array = @{$args{Citations}};
      foreach my $i ( 0 ... $#array ) {
-        $self->{WRITER}->startTag( 'EventID','cite' => ${$array[$i]}{Cite} );
-	$self->{WRITER}->characters( ${$array[$i]}{ID} );
-	$self->{WRITER}->endTag( 'EventID' );
+        if ( exists $args{UseID} ) {
+           $self->{WRITER}->startTag( 'EventID','cite' => ${$array[$i]}{Cite} );
+	   $self->{WRITER}->characters( ${$array[$i]}{ID} );
+	   $self->{WRITER}->endTag( 'EventID' );
+        } else {
+           $self->{WRITER}->startTag( 'EventIVORN','cite' => ${$array[$i]}{Cite} );
+	   $self->{WRITER}->characters( ${$array[$i]}{ID} );
+	   $self->{WRITER}->endTag( 'EventIVORN' );	
+	}
      }
      $self->{WRITER}->endTag( 'Citations' );
   }

@@ -103,22 +103,22 @@ __DATA__
 <VOEvent role="test" ivorn="ivo://raptor.lanl/23456789/" version="1.1x" xmlns="http://www.ivoa.net/xml/VOEvent/v1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOEvent/v1.1 http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd">
     <Description>This is some human readable text.</Description>
     <Who>
-        <Publisher>ivo://raptor.lanl</Publisher>
-        <Contact>
-            <Name>Robert White</Name>
-            <Institution>LANL</Institution>
-            <Address>Los Alamos National Laboratory,
+        <AuthorIVORN>ivo://raptor.lanl</AuthorIVORN>
+        <Author>
+            <shortName>LANL</shortName>
+            <contributor>Los Alamos National Laboratory,
 PO Box 1663,
 ISR-1, MS B244,
-Los Alamos, NM 87545</Address>
-            <Telephone>+1-505-665-3025</Telephone>
-            <Email>rwhite@lanl.gov</Email>
-        </Contact>
+Los Alamos, NM 87545</contributor>
+            <contactName>Robert White</contactName>
+            <contactPhone>+1-505-665-3025</contactPhone>
+            <contactEmail>rwhite@lanl.gov</contactEmail>
+        </Author>
         <Date>2005-04-15T14:34:16</Date>
     </Who>
     <Citations>
-        <EventID cite="supercedes">ivo://raptor.lanl/98765432/</EventID>
-        <EventID cite="associated">ivo://estar.org/1234567/aa/</EventID>
+        <EventIVORN cite="supercedes">ivo://raptor.lanl/98765432/</EventIVORN>
+        <EventIVORN cite="associated">ivo://estar.org/1234567/aa/</EventIVORN>
     </Citations>
     <WhereWhen>
         <ObsDataLocation xmlns="http://www.ivoa.net/xml/STC/stc-v1.30.xsd" xmlns:xlink="http://www.w3.org/1999/xlink">
