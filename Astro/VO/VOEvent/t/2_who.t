@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 79;
+use Test::More tests => 77;
 
 # load modules
 BEGIN {
@@ -121,26 +121,24 @@ Los Alamos, NM 87545</contributor>
     </Citations>
     <WhereWhen>
         <ObsDataLocation xmlns="http://www.ivoa.net/xml/STC/stc-v1.30.xsd" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <ObservatoryLocation id="GEOLUN" xlink:type="simple" xlink:href="ivo://STClib/Observatories#GEOLUN">
-                <ObservationLocation>
-                    <AstroCoordSystem id="UTC-FKC-GEO" xlink:type="simple" xlink:href="ivo://STClib/CoordSys#UTC-FK5-GEO/">
-                        <AstroCoords coord_system_id="UTC-FK5-GEO">
-                            <Time unit="s">
-                                <TimeInstant>
-                                    <ISOTime>2005-04-15T23:59:59</ISOTime>
-                                </TimeInstant>
-                            </Time>
-                            <Position2D unit="deg">
-                                <Value2>
-                                    <C1>148.888</C1>
-                                    <C2>69.065</C2>
-                                </Value2>
-                                <Error2Radius>4</Error2Radius>
-                            </Position2D>
-                        </AstroCoords>
-                    </AstroCoordSystem>
-                </ObservationLocation>
-            </ObservatoryLocation>
+            <ObservatoryLocation id="GEOLUN" xlink:type="simple" xlink:href="ivo://STClib/Observatories#GEOLUN" />
+            <ObservationLocation>
+                <AstroCoordSystem id="UTC-FK5-GEO" xlink:type="simple" xlink:href="ivo://STClib/CoordSys#UTC-FK5-GEO/" />
+                <AstroCoords coord_system_id="UTC-FK5-GEO">
+                    <Time unit="s">
+                        <TimeInstant>
+                            <ISOTime>2005-04-15T23:59:59</ISOTime>
+                        </TimeInstant>
+                    </Time>
+                    <Position2D unit="deg">
+                        <Value2>
+                            <C1>148.888</C1>
+                            <C2>69.065</C2>
+                        </Value2>
+                        <Error2Radius>4</Error2Radius>
+                    </Position2D>
+                </AstroCoords>
+            </ObservationLocation>
         </ObsDataLocation>
     </WhereWhen>
     <How>

@@ -1,4 +1,9 @@
-2006-05-19  Alasdair Allan <aa@astro.ex.ac.uk> (Supports V1.1 PR)
+2006-05-22  Alasdair Allan <aa@astro.ex.ac.uk> (VOEvent-v1.1-060519.xsd)
+
+	* VOEvent.pm: Fixed problem with STC block, documents built with the
+	  module now fully validate against the v1.1-060519 schema.
+	  
+2006-05-19  Alasdair Allan <aa@astro.ex.ac.uk>
 
 	* VOEvent.pm: Fixed <Who> block, doesn't seem as flexible as the
 	  tags we initially inherited from RTML. Tried to preserve the

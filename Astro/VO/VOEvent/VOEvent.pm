@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.22 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.23 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.22 2006/05/19 21:36:56 voevent Exp $
+$Id: VOEvent.pm,v 1.23 2006/05/22 20:29:49 voevent Exp $
 
 =head1 METHODS
 
@@ -444,13 +444,13 @@ sub build {
       $self->{WRITER}->startTag( 'ObsDataLocation', 
         'xmlns' => 'http://www.ivoa.net/xml/STC/stc-v1.30.xsd',  
         'xmlns:xlink' => 'http://www.w3.org/1999/xlink' );
-      $self->{WRITER}->startTag( 'ObservatoryLocation',
+      $self->{WRITER}->emptyTag( 'ObservatoryLocation',
         'id' => "GEOLUN",
 	'xlink:type' => 'simple', 
         'xlink:href' => 'ivo://STClib/Observatories#GEOLUN' );
       $self->{WRITER}->startTag( 'ObservationLocation' );
-      $self->{WRITER}->startTag( 'AstroCoordSystem',
-        'id' => 'UTC-FKC-GEO',
+      $self->{WRITER}->emptyTag( 'AstroCoordSystem',
+        'id' => 'UTC-FK5-GEO',
 	'xlink:type' => 'simple',  
 	'xlink:href' => 'ivo://STClib/CoordSys#UTC-FK5-GEO/' );
       $self->{WRITER}->startTag( 'AstroCoords',
@@ -478,9 +478,7 @@ sub build {
       }  
       $self->{WRITER}->endTag( 'Position2D' );
       $self->{WRITER}->endTag( 'AstroCoords' );
-      $self->{WRITER}->endTag( 'AstroCoordSystem' );
       $self->{WRITER}->endTag( 'ObservationLocation' );
-      $self->{WRITER}->endTag( 'ObservatoryLocation' );
       $self->{WRITER}->endTag( 'ObsDataLocation' );
   
       #$self->{WRITER}->startTag( 'WhereWhen' );
