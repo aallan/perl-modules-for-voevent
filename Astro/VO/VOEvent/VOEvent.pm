@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.24 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.25 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.24 2006/06/07 17:55:48 voevent Exp $
+$Id: VOEvent.pm,v 1.25 2006/06/07 19:33:08 voevent Exp $
 
 =head1 METHODS
 
@@ -437,7 +437,8 @@ sub build {
   }
    
   # WHERE & WHEN  
-  unless ( exists $args{UseHTN} ) {
+  if ( exists $args{WhereWhen} ) {
+    unless ( exists $args{UseHTN} ) {
  
       $self->{WRITER}->startTag( 'WhereWhen' );
       $self->{WRITER}->startTag( 'ObsDataLocation', 
@@ -509,7 +510,7 @@ sub build {
       #$self->{WRITER}->endTag( 'crd:Position2D' );
       #$self->{WRITER}->endTag( 'crd:AstroCoords' );
       #$self->{WRITER}->endTag( 'stc:ObservationLocation' );
-  } else {
+    } else {
       $self->{WRITER}->startTag( 'WhereWhen', 
                                  'type' => 'simple', );
       $self->{WRITER}->startTag( 'RA', units => 'deg' );
@@ -547,8 +548,9 @@ sub build {
       }		    
       $self->{WRITER}->endTag( 'Time' );  
        
-  } 
-  $self->{WRITER}->endTag( 'WhereWhen' );
+    } 
+    $self->{WRITER}->endTag( 'WhereWhen' );
+  }
    
   # HOW
   if ( exists $args{How} ) {
