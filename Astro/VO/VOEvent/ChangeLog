@@ -1,3 +1,8 @@
+2006-06-07 Alasdair Allan <aa@astro.ex.ac.uk> 
+
+	* VOEvent.pm: Reduced minimum hash for an event message down to
+	  Role and ID, removed requirement for WhereWhen or Ref
+
 2006-05-22  Alasdair Allan <aa@astro.ex.ac.uk> (VOEvent-v1.1-060519.xsd)
 
 	* VOEvent.pm: Fixed problem with STC block, documents built with the

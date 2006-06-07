@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.23 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.24 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.23 2006/05/22 20:29:49 voevent Exp $
+$Id: VOEvent.pm,v 1.24 2006/06/07 17:55:48 voevent Exp $
 
 =head1 METHODS
 
@@ -215,8 +215,7 @@ sub build {
   my %args = @_;
 
   # mandatory tags
-  unless ( exists $args{Role} && exists $args{ID} && 
-           ( exists $args{Reference} || $args{WhereWhen} ) ) {
+  unless ( exists $args{Role} && exists $args{ID} ) {
      return undef;
   }         
 
