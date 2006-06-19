@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 67;
+use Test::More tests => 74;
 
 # load modules
 BEGIN {
@@ -30,7 +30,6 @@ my $address = "Los Alamos National Laboratory,\n" .
               "Los Alamos, NM 87545";
               
 my $document = $object->build( 
-     UseHTN => 1,
      Role => 'test',
      ID   => 'ivo://raptor.lanl/23456789/',
      Description => 'This is some human readable text.',
@@ -47,8 +46,10 @@ my $document = $object->build(
                       Cite => 'associated' } ],
      WhereWhen => { RA => '148.888', Dec => '69.065', Error => '4',
                     Time => '2005-04-15T23:59:59', TimeError => '30' },  
-     How => { Name => 'Raptor AB', Location => 'Los Alamos',
-              RTML => 'http://www.raptor.lanl.gov/documents/phase_zero.html' },
+     How => { RTML => 'http://www.raptor.lanl.gov/documents/phase_zero.html',
+              Reference => { URL  => 'http://www.raptor.lanl.gov/', 
+	                     Type => 'url',
+			     Name => 'About RAPTOR'  }   },
      What => [ { Group => [ { Name  => 'magnitude',
                               UCD   => 'phot.mag:em.opt.R',
                               Value => '13.2',
@@ -100,7 +101,7 @@ exit;
 __DATA__
 <?xml version="1.0" encoding="UTF-8"?>
 
-<VOEvent role="test" id="ivo://raptor.lanl/23456789/" version="HTN/0.2">
+<voe:VOEvent role="test" ivorn="ivo://raptor.lanl/23456789/" version="1.1" xmlns:voe="http://www.ivoa.net/xml/VOEvent/v1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOEvent/v1.1 http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd">
     <Description>This is some human readable text.</Description>
     <Who>
         <AuthorIVORN>ivo://raptor.lanl</AuthorIVORN>
@@ -120,24 +121,31 @@ Los Alamos, NM 87545</contributor>
         <EventIVORN cite="supercedes">ivo://raptor.lanl/98765432/</EventIVORN>
         <EventIVORN cite="associated">ivo://estar.org/1234567/aa/</EventIVORN>
     </Citations>
-    <WhereWhen type="simple">
-        <RA units="deg">
-            <Coord>148.888</Coord>
-            <Error value="4" units="arcmin" />
-        </RA>
-        <Dec units="deg">
-            <Coord>69.065</Coord>
-            <Error value="4" units="arcmin" />
-        </Dec>
-        <Epoch value="J2000.0" />
-        <Equinox value="2000.0" />
-        <Time>
-            <Value>2005-04-15T23:59:59</Value>
-            <Error value="30" units="s" />
-        </Time>
+    <WhereWhen>
+        <ObsDataLocation xmlns="http://www.ivoa.net/xml/STC/stc-v1.30.xsd" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <ObservatoryLocation id="GEOLUN" xlink:type="simple" xlink:href="ivo://STClib/Observatories#GEOLUN" />
+            <ObservationLocation>
+                <AstroCoordSystem id="UTC-FK5-GEO" xlink:type="simple" xlink:href="ivo://STClib/CoordSys#UTC-FK5-GEO/" />
+                <AstroCoords coord_system_id="UTC-FK5-GEO">
+                    <Time unit="s">
+                        <TimeInstant>
+                            <ISOTime>2005-04-15T23:59:59</ISOTime>
+                        </TimeInstant>
+                    </Time>
+                    <Position2D unit="deg">
+                        <Value2>
+                            <C1>148.888</C1>
+                            <C2>69.065</C2>
+                        </Value2>
+                        <Error2Radius>4</Error2Radius>
+                    </Position2D>
+                </AstroCoords>
+            </ObservationLocation>
+        </ObsDataLocation>
     </WhereWhen>
     <How>
         <Reference uri="http://www.raptor.lanl.gov/documents/phase_zero.html" type="rtml" name="Phase 0" />
+        <Reference uri="http://www.raptor.lanl.gov/" type="url" name="About RAPTOR" />
     </How>
     <What>
         <Group>
@@ -161,4 +169,4 @@ Los Alamos, NM 87545</contributor>
         </Inference>
         <Concept>Supernova</Concept>
     </Why>
-</VOEvent>
+</voe:VOEvent>

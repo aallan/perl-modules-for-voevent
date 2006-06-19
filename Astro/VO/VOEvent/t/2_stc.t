@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 77;
+use Test::More tests => 73;
 
 # load modules
 BEGIN {
@@ -142,11 +142,7 @@ Los Alamos, NM 87545</contributor>
         </ObsDataLocation>
     </WhereWhen>
     <How>
-        <Instrument>
-            <Name>Raptor AB</Name>
-            <Location>Los Alamos</Location>
-            <Reference uri="http://www.raptor.lanl.gov/documents/phase_zero.html" type="rtml" />
-        </Instrument>
+        <Reference uri="http://www.raptor.lanl.gov/documents/phase_zero.html" type="rtml" name="Phase 0" />
     </How>
     <What>
         <Group>

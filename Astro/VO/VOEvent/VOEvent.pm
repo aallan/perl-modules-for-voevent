@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.25 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.26 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.25 2006/06/07 19:33:08 voevent Exp $
+$Id: VOEvent.pm,v 1.26 2006/06/19 21:16:38 voevent Exp $
 
 =head1 METHODS
 
@@ -125,7 +125,10 @@ or
                                           Time  => $time },
                          How         => { Name     => $string,
                                           Location => $string,
-                                          RTML     => $url }, 
+                                          RTML     => $url,
+					  Reference => { URL => $url, 
+					                 Type => $string,
+							 Name => $string } }, 
                          What        => [ { Name  => $strig,
                                             UCD   => $string,
                                             Value => $string },
@@ -555,26 +558,31 @@ sub build {
   # HOW
   if ( exists $args{How} ) {
      $self->{WRITER}->startTag( 'How' );
-     $self->{WRITER}->startTag( 'Instrument' );
     
-     if ( exists ${$args{How}}{Name} ) {
-       $self->{WRITER}->startTag( 'Name' );
-       $self->{WRITER}->characters( ${$args{How}}{Name} );
-       $self->{WRITER}->endTag( 'Name' );
-     }           
+     #if ( exists ${$args{How}}{Name} ) {
+     #  $self->{WRITER}->startTag( 'Name' );
+     #  $self->{WRITER}->characters( ${$args{How}}{Name} );
+     #  $self->{WRITER}->endTag( 'Name' );
+     #}           
     
-     if ( exists ${$args{How}}{Location} ) {
-       $self->{WRITER}->startTag( 'Location' );
-       $self->{WRITER}->characters( ${$args{How}}{Location} );
-       $self->{WRITER}->endTag( 'Location' );
-     }     
+     #if ( exists ${$args{How}}{Location} ) {
+     #  $self->{WRITER}->startTag( 'Location' );
+     #  $self->{WRITER}->characters( ${$args{How}}{Location} );
+     #  $self->{WRITER}->endTag( 'Location' );
+     #}     
      if ( exists ${$args{How}}{RTML} ) {
        $self->{WRITER}->emptyTag( 'Reference' , 
                                    uri => ${$args{How}}{RTML}, 
-                                   type => 'rtml' );
-     }         
-        
-     $self->{WRITER}->endTag( 'Instrument' );
+                                   type => 'rtml',
+				   name => 'Phase 0' );
+     }
+     if ( exists ${$args{How}}{Reference} ) {
+       $self->{WRITER}->emptyTag( 'Reference' , 
+                                   uri => ${${$args{How}}{Reference}}{URL}, 
+                                   type => ${${$args{How}}{Reference}}{Type},
+				   name => ${${$args{How}}{Reference}}{Name} );
+     }
+             
      $self->{WRITER}->endTag( 'How' );
   }
 

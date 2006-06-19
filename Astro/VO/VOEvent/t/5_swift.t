@@ -92,10 +92,7 @@ __DATA__
   </Time>
  </WhereWhen>
  <How>
-  <Instrument>
-   <Name>Swift Satellite</Name>
-   <References url="http://swift.gsfc.nasa.gov/docs/swift/swiftsc.html" />
-  </Instrument>
+   <Reference url="http://swift.gsfc.nasa.gov/docs/swift/swiftsc.html" />
  </How>
  <Why importance="0.3" >
   <Inference probability="0.3" >

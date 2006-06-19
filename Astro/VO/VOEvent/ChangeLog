@@ -1,3 +1,9 @@
+2006-06-19 Alasdair Allan <aa@astro.ex.ac.uk> 
+
+	* VOEvent.pm: Modified <How> support to validate against the 1.1 draft.
+	
+	* t/2_how.t: Tests for above modifications.
+
 2006-06-07 Alasdair Allan <aa@astro.ex.ac.uk> 
 
 	* VOEvent.pm: Reduced minimum hash for an event message down to

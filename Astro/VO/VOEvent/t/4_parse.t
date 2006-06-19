@@ -177,11 +177,7 @@ Los Alamos, NM 87545</Address>
         </Time>
     </WhereWhen>
     <How>
-        <Instrument>
-            <Name>Raptor AB</Name>
-            <Location>Los Alamos</Location>
-            <Reference uri="http://www.raptor.lanl.gov/documents/phase_zero.html" type="rtml" />
-        </Instrument>
+        <Reference uri="http://www.raptor.lanl.gov/documents/phase_zero.html" type="rtml" />
     </How>
     <What>
         <Group>
