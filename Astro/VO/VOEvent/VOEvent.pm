@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.27 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.28 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.27 2006/06/20 20:50:25 voevent Exp $
+$Id: VOEvent.pm,v 1.28 2006/06/20 20:57:52 voevent Exp $
 
 =head1 METHODS
 
@@ -1103,7 +1103,7 @@ Return the <Param> and <Group>'s of <Param>s in the <What> tag,
 
 sub what {
   my $self = shift;
-  if ( defined $self->{DOCUMENT}->{WHAT} ) { 
+  if ( defined $self->{DOCUMENT}->{What} ) { 
      return %{$self->{DOCUMENT}->{What}};
   } else {
      return undef;
