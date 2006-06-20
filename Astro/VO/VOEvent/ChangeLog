@@ -1,3 +1,8 @@
+2006-06-20 Alasdair Allan <aa@astro.ex.ac.uk> 
+
+        * VOEvent.pm: Bug fix to what() so it return undef if there isn't a
+          <What> tag rather than returning an error.
+
 2006-06-19 Alasdair Allan <aa@astro.ex.ac.uk> 
 
 	* VOEvent.pm: Modified <How> support to validate against the 1.1 draft.
