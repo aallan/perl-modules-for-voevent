@@ -3,7 +3,7 @@ package Astro::VO::VOEvent;
 
 =head1 NAME
 
-eSTAR::RTML - Object interface to parse and create VOEvent messages
+Astro::VO::VOEvent - Object interface to parse and create VOEvent messages
 
 =head1 SYNOPSIS
 
@@ -42,13 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.28 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.29 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.28 2006/06/20 20:57:52 voevent Exp $
+$Id: VOEvent.pm,v 1.29 2006/11/17 16:54:40 voevent Exp $
 
 =head1 METHODS
 
