@@ -1,3 +1,7 @@
+2007-01-04 Alasdair Allan <aa@astro.ex.ac.uk> 
+
+	* t/4_stc.t: Fixed prefix in comparison test file.
+	
 2006-06-20 Alasdair Allan <aa@astro.ex.ac.uk> 
 
         * VOEvent.pm: Bug fix to what() so it return undef if there isn't a

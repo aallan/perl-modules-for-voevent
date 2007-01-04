@@ -190,7 +190,7 @@ __DATA__
 	  </crd:Error2PA>
 	</crd:Position2D>
       </crd:AstroCoords>
-    </ObservationLocation>
+    </stc:ObservationLocation>
   </WhereWhen>
     
   <How>
