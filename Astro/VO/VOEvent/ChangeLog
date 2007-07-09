@@ -1,3 +1,8 @@
+2007-07-09 Alasdair Allan <aa@astro.ex.ac.uk> 
+
+        * VOEvent.pm: Added functionality written by Elizabeth Auden to 
+	  handle importing event messages into Astrogrid STAP services.
+	  
 2007-01-04 Alasdair Allan <aa@astro.ex.ac.uk> 
 
 	* t/4_stc.t: Fixed prefix in comparison test file.

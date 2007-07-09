@@ -27,7 +27,8 @@ Authors
 
 The module was written by Alasdair Allan <aa@astro.ex.ac.uk>, of the 
 University of Exeter Astrophysics Group (http://www.astro.ex.ac.uk/) 
-as part of his work for the eSTAR project.
+as part of his work for the eSTAR project. Patche for import functionality
+to Astrogrid STAP services were provided by Elizabeth Auden.
 
 License
 -------
