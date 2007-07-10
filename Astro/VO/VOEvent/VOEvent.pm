@@ -42,15 +42,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-our ($references);
-
-'$Revision: 1.30 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.31 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.30 2007/07/09 17:26:58 voevent Exp $
+$Id: VOEvent.pm,v 1.31 2007/07/10 17:36:11 voevent Exp $
 
 =head1 METHODS
 
@@ -1261,50 +1259,50 @@ Return the <Reference>'s name and uri from the <What> tag,
   $object = new Astro::VO::VOEvent( XML => $scalar );
   $references = $object->references();
 
+will also return any <Param>s from the <What> block that include
+a URL reference.
+
 =cut
 
 sub references {
   my $self = shift;
-  my $refs = "";
-  my $ref = "";
-  my $refname = "";
-  my $refuri = "";
-  if ( $self->{DOCUMENT}->{What}->{Reference}->{'uri'} ne "") {
-    $refname = $self->{DOCUMENT}->{What}->{Reference}->{'name'};
-    $refuri = $self->{DOCUMENT}->{What}->{Reference}->{'uri'};
-  }
-  else {
+  
 
+  my ( $name, $uri );
+  my $references = "";
+  if ( $self->{DOCUMENT}->{What}->{Reference}->{'uri'} ne "") {
+    $name = $self->{DOCUMENT}->{What}->{Reference}->{'name'};
+    $uri = $self->{DOCUMENT}->{What}->{Reference}->{'uri'};
+    
+  } else {
     while ( my ($key, $value) = each ( %{$self->{DOCUMENT}->{What}->{Reference}})) {
       if ( ref($value) eq "HASH") {
-        $refname = $key;
-        $refuri = $value->{'uri'};
-      }
-      else {
+        $name = $key;
+        $uri = $value->{'uri'};
+      } else {
         if ($key eq "name") {
-          $refname = $value;
+          $name = $value;
         } 
         if ($key eq "uri") {
-          $refuri = $value;
+          $uri = $value;
         }
       }
-    }  
+      if ( defined $uri && $uri ne "" ) {
+         if ( defined $name && $name ne "" ) {
+            $references = $references . "$name=$uri, ";
+         } else {
+            $references = $references . "ref=$uri, ";
+         }
+      }   
+      
+    } # end of while loop  
 
   } 
 
-  if ($refuri ne "") {
-    if ($refname ne "") {
-      $ref = $refname . "=" . $refuri;
-    }
-    else {
-     $ref = "ref" . "=" . $refuri;
-    }
-    $refs = $refs . $ref . ", "; 
-  }
-
-  $refs = $refs . $references;
-  $references = "";
-  return $refs;
+  my $params = $self->params( References => 1 );
+  $references = $references . $params;
+  
+  return $references;
 }
 
 =item B{params}
@@ -1312,12 +1310,26 @@ sub references {
 Return the <Group><Param></Group>'s name, value and unit from the <What> tag,
 
   $object = new Astro::VO::VOEvent( XML => $scalar );
-  $group_params = $object->group_params();
+  $group_params = $object->params( References => $boolean );
+
+If References => 1 then only Params containing URLs will be returned, if
+References => 0 then only Params not containing URLs will be returned. By
+default if no %hash is passed to the params() routine then ALL params will
+be returned.
 
 =cut
 
 sub params {
   my $self = shift;
+  my %hash = @_; # hidden param, if flagged then we want references
+  
+  my $flag;
+  if ( defined $hash{References} && $hash{References} == 1 ) {
+     $flag = 1;
+  } else {
+     $flag = 0;
+  }      
+  
   my $param = "";
   my $params = "";
 
@@ -1330,7 +1342,7 @@ sub params {
           if ($value->{Param} eq "") {
               while ( my ($key2, $value2) = each ( %{$value})) { 
                 while ( my ($key3, $value3) = each ( %{$value2->{Param}} ) ) {
-                  $param = param_vals($key3, $value3);
+                  $param = $self->_param_vals($key3, $value3, $flag);
                   if ($param ne "") {
                     $params = $params . $param . ", ";
                   }
@@ -1339,7 +1351,7 @@ sub params {
           } else {
                while ( my ($key2, $value2) = each ( %{$value->{Param}} ) ) {
                  while ( my ($key3, $value3) = each ( %{$value2->{Param}} ) ) {
-                   $param = param_vals($key3, $value3);
+                   $param = $self->_param_vals($key3, $value3, $flag);
                    if ($param ne "") {
                      $params = $params . $param . ", ";
                   }
@@ -1352,7 +1364,8 @@ sub params {
     # Test reference for hash of  //VOEvent/What/Param
     if ( ref($value) eq "HASH" && $key eq "Param" ) {
       if ($value->{'value'} ne "") {
-        $param = construct_param($value->{'name'}, $value->{'value'}, $value->{'unit'}, $value->{'units'});
+        $param = $self->_construct_param($value->{'name'}, $value->{'value'}, 
+                                  $value->{'unit'}, $value->{'units'}, $flag);
         if ($param ne "") {
           $params = $params . $param . ", ";
         }
@@ -1361,7 +1374,7 @@ sub params {
     
         # Get comma-separated param key / value pairs below What
         while ( my ($key2, $value2) = each ( %{$value})) {
-            $param = param_vals($key2, $value2);
+            $param = $self->_param_vals($key2, $value2, $flag);
             if ($param ne "") {
               $params = $params . $param . ", ";
             }
@@ -1373,7 +1386,7 @@ sub params {
     if ( ref($value) eq "ARRAY" && $key eq "Group" ) {
       foreach (@{$value}) {
         while ( my ($key2, $value2) = each ( %{$_->{Param}})) {
-            $param = param_vals($key2, $value2);
+            $param = $self->_param_vals($key2, $value2, $flag);
             if ($param ne "") {
               $params = $params . $param . ", ";
             }
@@ -1384,73 +1397,6 @@ sub params {
 
   return $params;
 }
-
-=item B{params_vals}
-
-Return the <Group><Param></Group>'s name, value and unit from the <What> tag,
-
-  $object = new Astro::VO::VOEvent( XML => $scalar );
-  $param = param_vals(key, value);
-
-=cut
-
-#sub param_vals($my($key2, my $value2)) {
-sub param_vals {
-
-  my($key2, $value2) = @_;
-
-  my $param_key = "";
-  my $param_value = "";
-  my $param_unit = "";
-  my $param_units = "";
-  my $param = "";
-
-  $param_key = $key2;
-  $param_value = $value2->{'value'};
-  $param_unit = $param_unit = "$value2->{'unit'}";
-  $param_units = $param_unit = "$value2->{'units'}";
-
-  $param = construct_param($param_key, $param_value, $param_unit, $param_units);
-}
-
-#su param_vals {
-sub construct_param {
-
-  my $param = ""; 
-  my($param_key, $param_value, $param_unit, $param_units) = @_;
-
-      # Check for param values that should be reference files
-      if ((substr $param_value, 0, 6) eq "ftp://") {
-        $references = $references . "$param_key=$param_value" . ", ";
-      }
-      elsif ((substr $param_value, 0, 7) eq "http://") {
-        $references = $references . "$param_key=$param_value" . ", ";
-      }
-      else {
-
-        # Get the parameter's name from $key2 and its value from $value2->'value'
-        $param = "$param_key=$param_value";
-
-        # Get the parameter's unit from $value2->'unit'...
-        if ($param_unit ne "") {
-          $param = $param .  " " . $param_unit; 
-        }
-
-        #...unless the parameter's unit is in $value2->'units'...
-        elsif ($param_unit eq "") {
-          if ($param_units ne "") {
-            $param = $param .  " " . $param_units; 
-          }
-
-          # ...unless the parameter has no unit.
-          elsif ($param_units eq "") {
-            $param = $param; 
-          }
-        }
-      }
-  return $param;
-}
-
 
 
 # C O N F I G U R E ---------------------------------------------------------
@@ -1573,6 +1519,69 @@ sub _parse {
   #print Dumper( $self->{DOCUMENT} );      
   return;
 }
+
+
+sub _param_vals {
+  my $self = shift;
+  my $key2 = shift; 
+  my $value2 = shift;
+  my $flag = shift;
+
+  my $param_key = "";
+  my $param_value = "";
+  my $param_unit = "";
+  my $param_units = "";
+  my $param = "";
+
+  $param_key = $key2;
+  $param_value = $value2->{'value'};
+  $param_unit = $param_unit = "$value2->{'unit'}";
+  $param_units = $param_unit = "$value2->{'units'}";
+
+  $param = $self->_construct_param($param_key, $param_value, 
+                           $param_unit, $param_units, $flag);
+}
+
+sub _construct_param {
+  my $self = shift;
+  my $param_key = shift; 
+  my $param_value = shift; 
+  my $param_unit = shift; 
+  my $param_units = shift; 
+  my $flag = shift;
+
+  my $param = ""; 
+  # Check for param values that should be reference files
+  if ((substr $param_value, 0, 6) eq "ftp://") {
+    $param = $param . "$param_key=$param_value" if $flag;
+    
+  } elsif ((substr $param_value, 0, 7) eq "http://") {
+    $param = $param . "$param_key=$param_value" if $flag;
+    
+  } else {
+    # Get the parameter's name from $key2 and its value from $value2->'value'
+    $param = "$param_key=$param_value" if !$flag;
+
+    # Get the parameter's unit from $value2->'unit'...
+    if ($param_unit ne "") {
+      $param = $param .  " " . $param_unit if !$flag; 
+    }
+
+    #...unless the parameter's unit is in $value2->'units'...
+    elsif ($param_unit eq "") {
+      if ($param_units ne "") {
+        $param = $param .  " " . $param_units if !$flag; 
+      }
+
+      # ...unless the parameter has no unit.
+      elsif ($param_units eq "") {
+        $param = $param if !$flag; 
+      }
+    }
+  }
+  return $param;
+}
+
 
 # L A S T  O R D E R S ------------------------------------------------------
 

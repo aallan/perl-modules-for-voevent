@@ -1,3 +1,8 @@
+2007-07-10 Alasdair Allan <aa@astro.ex.ac.uk> 
+
+        * VOEvent.pm: Refactored new routines to avoid use of global 
+          variables.
+        
 2007-07-09 Alasdair Allan <aa@astro.ex.ac.uk> 
 
         * VOEvent.pm: Added functionality written by Elizabeth Auden to 

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<voe:VOEvent role="observation" ivorn="ivo://uk.org.estar/pl.edu.ogle#OGLE-2006-BLG-test-32" version="1.1" xmlns:voe="http://www.ivoa.net/xml/VOEvent/v1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOEvent/v1.1 http://www.ivoa.net/xml/VOEvent/VOEvent-v1.1.xsd">
+
+    <Description>The OGLE early warning system (EWS) has detected a candidate micro-lensing transient event. For more information about the OGLE EWS see the OGLE website.</Description>
+    <Who>
+        <AuthorIVORN>ivo://uk.org.estar/pl.edu.ogle#</AuthorIVORN>
+        <Author>
+            <shortName>OGLE III Project (via eSTAR Project)</shortName>
+            <contactName>Andrzej Udalski</contactName>
+            <contactEmail>udalski@astrouw.edu.pl</contactEmail>
+        </Author>
+    </Who>
+    <WhereWhen>
+        <ObsDataLocation xmlns="http://www.ivoa.net/xml/STC/stc-v1.30.xsd" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <ObservatoryLocation id="GEOLUN" xlink:type="simple" xlink:href="ivo://STClib/Observatories#GEOLUN" />
+            <ObservationLocation>
+                <AstroCoordSystem id="UTC-FK5-GEO" xlink:type="simple" xlink:href="ivo://STClib/CoordSys#UTC-FK5-GEO/" />
+                <AstroCoords coord_system_id="UTC-FK5-GEO">
+                    <Time unit="s">
+                        <TimeInstant>
+                            <ISOTime>2006-06-11T07:40:48+0000</ISOTime>
+                        </TimeInstant>
+                    </Time>
+                    <Position2D unit="deg">
+                        <Value2>
+                            <C1>270.835833333333</C1>
+                            <C2>-27.9038055555556</C2>
+                        </Value2>
+                    </Position2D>
+                </AstroCoords>
+            </ObservationLocation>
+        </ObsDataLocation>
+    </WhereWhen>
+    <What>
+        <Param name="Field" ucd="meta.dataset" value="BLG225.8" />
+        <Param name="StarNo" ucd="meta.id" value="85682" />
+        <Group>
+            <Param name="Tmax" ucd="time.epoch" value="2453897.825" units="days" />
+            <Param name="Error" ucd="time.interval" value="0.261" units="days" />
+        </Group>
+        <Group>
+            <Param name="Tau" ucd="time.scale" value="13.811" units="days" />
+            <Param name="Error" ucd="time.interval" value="0.426" units="days" />
+        </Group>
+        <Param name="Finding Chart" ucd="meta.ref.url" value="http://www.astrouw.edu.pl/~ogle/ogle3/ews/blg-315.html" />
+    </What>
+    <Why>
+        <Inference probability="1.0">
+            <Concept>Microlensing Event</Concept>
+            <Name>OGLE-2006-BLG-test-32</Name>
+        </Inference>
+    </Why>
+</voe:VOEvent>
