@@ -4,7 +4,7 @@
 use strict;
 
 #load test
-use Test::More tests => 667;
+use Test::More tests => 668;
 use File::Spec;
 use Data::Dumper;
 

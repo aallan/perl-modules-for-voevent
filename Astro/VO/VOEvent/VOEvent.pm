@@ -32,6 +32,8 @@ layer for building new messages. Functionality is currently very limited.
 use strict;
 use vars qw/ $VERSION $SELF /;
 
+use UNIVERSAL;
+
 #use XML::Parser;
 use XML::Simple;
 use XML::Writer;
@@ -42,13 +44,13 @@ use File::Spec;
 use Carp;
 use Data::Dumper;
 
-'$Revision: 1.31 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
+'$Revision: 1.32 $ ' =~ /.*:\s(.*)\s\$/ && ($VERSION = $1);
 
 # C O N S T R U C T O R ----------------------------------------------------
 
 =head1 REVISION
 
-$Id: VOEvent.pm,v 1.31 2007/07/10 17:36:11 voevent Exp $
+$Id: VOEvent.pm,v 1.32 2008/08/21 12:35:14 voevent Exp $
 
 =head1 METHODS
 
@@ -770,7 +772,20 @@ Return the human readable description from the VOEvent document
 
 sub description {
   my $self = shift;
-  return $self->{DOCUMENT}->{Description};
+  
+  my $string = $self->{DOCUMENT}->{Description};
+  if ( UNIVERSAL::isa( $string, "HASH") ) {
+      $string = $string->{'content'}; 
+  }
+  
+  unless ( defined $string ) {
+    $string = $self->{DOCUMENT}->{How}->{Description};
+  }
+  unless ( defined $string ) {
+    $string = $self->{DOCUMENT}->{Who}->{Description};
+  }  
+  
+  return $string;
 }
 
 =item B{ra}
@@ -844,6 +859,16 @@ sub ra {
         ->{'ObservatoryLocation'}->{'ObservationLocation'}
 	->{'AstroCoordSystem'}->{'AstroCoords'}
 	->{'Position2D'}->{unit};     
+    }
+
+    # VO-GCN does things differently again?
+    if ( UNIVERSAL::isa($ra{value}, "HASH") ) {
+      $ra{value} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{'Position2D'}
+	->{'Value2'}->{'C1'}->{'content'}; 
+
+      $ra{units} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{'Position2D'}->{unit};     
     }
 
   }  
@@ -921,6 +946,16 @@ sub dec {
         ->{'ObservatoryLocation'}->{'ObservationLocation'}
 	->{'AstroCoordSystem'}->{'AstroCoords'}
 	->{'Position2D'}->{unit};     
+    }
+
+    # VO-GCN does things differently again?
+    if ( UNIVERSAL::isa($dec{value}, "HASH") ) {
+      $dec{value} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{'Position2D'}
+	->{'Value2'}->{'C2'}->{'content'}; 
+
+      $dec{units} = $self->{DOCUMENT}->{WhereWhen}->{'ObsDataLocation'}
+        ->{'ObservationLocation'}->{'AstroCoords'}->{'Position2D'}->{unit};     
     }
 
   }  

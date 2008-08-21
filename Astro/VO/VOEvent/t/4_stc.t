@@ -41,7 +41,7 @@ is( $version, "1.0", "comparing VERSION strings" );
 
 
 my $description = $object->description( );
-is( $description, undef, "comparing <Description>" );
+is( $description, "      This VOEvent resulted from observations made with Raptor AB at Los Alamos.    ", "comparing <Description>" );
 
 my $ra = $object->ra( );
 is( $ra, "148.88", "Comparing RA" );
