@@ -1,7 +1,6 @@
 ChangeLog
 GPL
 MANIFEST
-Makefile
 Makefile.PL
 README
 VOEvent.pm
